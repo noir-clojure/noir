@@ -1,4 +1,4 @@
-# ryla
+# Noir
 
 A framework for writing clojure websites
 
