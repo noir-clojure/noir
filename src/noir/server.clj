@@ -48,7 +48,6 @@
   (if (dev-mode?)
     (wrap-reload-modified (fn [request]
                    (init-routes noir/*options*)
-                            (println (handler {:request-method :get :uri "/woot6"}))
                    (handler request))
                  ["src"])
     handler))
