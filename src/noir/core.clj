@@ -1,13 +1,10 @@
 (ns noir.core
   (:use hiccup.core
         compojure.core)
-  (:require [compojure.handler :as handler]
-            [compojure.route :as c-route]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 (declare *options*)
 (def *noir-routes* (atom {}))
-(def *error-pages* (atom {}))
 
 (defn keyword->symbol [namesp kw]
   (symbol namesp (string/upper-case (subs (str kw) 1))))
@@ -30,8 +27,9 @@
      (html
        ~@body)))
 
-(defn get-error-page [code]
-  (get @*error-pages* code))
-
-(defn error-page! [code content]
-  (swap! *error-pages* assoc code content))
+(defmacro render 
+  "Renders the content for a route by calling the page like a function
+  with the given param map"
+  [route & params]
+  (let [func# (symbol (route->key route))]
+    `(~func# ~(first params))))

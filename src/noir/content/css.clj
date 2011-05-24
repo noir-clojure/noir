@@ -59,8 +59,8 @@
                 :margin-bottom :20px
                 ))
 
-    (rule "#exception"
-          :max-width :900px
+    (rule "#exception" 
+          :max-width :900px 
           :min-width :500px
           (rule "h1"
                 :font-size :24px)

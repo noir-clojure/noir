@@ -33,6 +33,9 @@
            [:h2 "You posted something:"]
            [:p hey]))
 
+(defpage "/render" []
+         (render "/params" {:hey "how are you?"}))
+
 (defpage "/json/:name" {n :name}
          (resp/json
            {:name n}))
@@ -83,11 +86,12 @@
            [:p "How about your name? " (or (vali/errors? :username) 
                                            "Well, it appears to be the appropriate length.")]))
 
-;; (error-page! 404
-;;           (main-layout
-;;             [:p "We couldn't find what you were looking for!"]))
+ (server/set-error! 400
+           (main-layout
+             [:p "We couldn't find what you were looking for!"]))
 
-(defn -main []
-  (server/start 8082 {:mode :prod
-                      :ns 'noir}))
+(defn -main [& m]
+  (let [mode (or (first m) :dev)]
+    (server/start 8082 {:mode (keyword mode)
+                        :ns 'noir})))
 
