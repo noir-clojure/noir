@@ -1,9 +1,12 @@
 (ns noir.example
+  (:gen-class)
   (:use noir.core
         hiccup.core
         hiccup.form-helpers
         hiccup.page-helpers)
-  (:require [noir.server :as server]
+  (:require [cssgen :as css]
+            [noir.server :as server]
+            [noir.content.pages :as pages]
             [noir.cookies :as cookie]
             [noir.validation :as vali]
             [noir.response :as resp]
@@ -15,10 +18,6 @@
                [:title "Awesome"]]
               [:body
                content]))
-
-(defpage "/" {}
-         (main-layout
-           [:p "Welcome to noir."]))
 
 (defpage "/params" {awk :awk} 
          (main-layout
@@ -47,6 +46,9 @@
          (cookie/put! :noir2 {:value "more stuff" :path "/cookie-map" :expires 1})
          (main-layout
            [:p "You created another cookie."]))
+
+(defpage "/exception" []
+           (/ 1 0))
 
 (defpage "/multi-cookie" []
          (cookie/put! :a1 "awk")
@@ -81,8 +83,11 @@
            [:p "How about your name? " (or (vali/errors? :username) 
                                            "Well, it appears to be the appropriate length.")]))
 
-(error-page! 404
-             (main-layout
-               [:p "We couldn't find what you were looking for!"]))
+;; (error-page! 404
+;;           (main-layout
+;;             [:p "We couldn't find what you were looking for!"]))
 
-(server/start 8082)
+(defn -main []
+  (server/start 8082 {:mode :prod
+                      :ns 'noir}))
+
