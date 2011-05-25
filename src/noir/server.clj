@@ -67,6 +67,8 @@
                  ["src"])
     handler))
 
+(defn- pack-routes []
+  (apply routes (conj (vec (vals @noir/*noir-routes*)) spec-routes)))
 
 (defn- init-routes [opts]
   (binding [noir/*options* opts]
@@ -75,7 +77,7 @@
       ;; until the very end, so that we can add routes and get them on the first request
       ;; as opposed to requiring two refreshes to see a new page.
       (-> (fn [request] 
-            ((apply routes (conj (vec (vals @noir/*noir-routes*)) spec-routes)) request))
+            ((pack-routes) request))
         (handler/site)
         (session/wrap-noir-session)
         (cookie/wrap-noir-cookies)
@@ -86,7 +88,11 @@
         (wrap-exceptions)
         (wrap-options opts)))))
 
-(defn start [port opts]
+(defn start 
+  "Start the noir server bound to the specified port with a map of options. The available
+  options are [:mode :ns], where mode should be either :dev or :prod and :ns should be
+  the root namespace of your project."
+  [port opts]
   (init-routes opts)
   (run-jetty (var final-routes) {:port port}))
 

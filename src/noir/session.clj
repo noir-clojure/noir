@@ -11,13 +11,19 @@
       (let [resp (handler request)]
         (assoc resp :session @*noir-session*)))))
 
-(defn put! [k v]
+(defn put! 
+  "Associates the key with the given value in the session"
+  [k v]
   (swap! *noir-session* assoc k v))
 
-(defn get [k]
+(defn get 
+  "Get the key's value from the session, returns nil if it doesn't exist."
+  [k]
   (clojure.core/get @*noir-session* k))
 
-(defn remove [k]
+(defn remove 
+  "Remove a key from the session"
+  [k]
   (swap! *noir-session* dissoc k))
 
 (defn wrap-noir-session [handler]

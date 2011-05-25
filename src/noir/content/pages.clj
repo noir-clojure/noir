@@ -7,7 +7,7 @@
 
 (defpartial header []
             [:div#header 
-             [:h1 [:a (image "/img/logo.png" "Noir")]]
+             [:h1 [:a (image "/img/noir-logo.png" "Noir")]]
              [:h2 "The Clojure web framework"]])
 
 (defpage "/" []

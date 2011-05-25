@@ -3,22 +3,24 @@
         clj-stacktrace.repl)
   (:require [clojure.string :as string]))  
 
-(defn route-fn? [k]
+(defn- route-fn? [k]
   (and k
-       (re-seq #"noir-rte" k)))
+       (re-seq #".*--" k)))
 
-(defn key->route-fn [k]
+(defn- key->route-fn [k]
   (if (route-fn? k)
-    (str " :: " (string/replace (subs k 8) #"--" "/"))
+    (let [with-slahes (string/replace k #"--" "/")
+          separated (string/replace with-slahes #"(POST|GET|HEAD|ANY|PUT|DELETE)" #(str (first %1) " :: "))]
+      separated)
     k))
 
-(defn ex-item [{anon :annon-fn func :fn nams :ns clj? :clojure f :file line :line :as ex}]
+(defn- ex-item [{anon :annon-fn func :fn nams :ns clj? :clojure f :file line :line :as ex}]
   (let [func-name (if (and anon func (re-seq #"eval" func))
                     "anon [fn]"
                     (key->route-fn func))
         ns-str (if clj?
                  (if (route-fn? func)
-                   (str nams func-name)
+                   (str nams " :: " func-name)
                    (str nams "/" func-name))
                  (str (:method ex) "." (:class ex)))]
     {:fn func-name
