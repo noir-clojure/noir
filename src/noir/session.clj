@@ -1,9 +1,10 @@
 (ns noir.session
   (:refer-clojure :exclude [get remove])
-  (:use ring.middleware.session))
-
+  (:use ring.middleware.session
+        ring.middleware.session.memory))
 
 (declare *noir-session*)
+(defonce mem (atom {}))
 
 (defn noir-session [handler]
   (fn [request]
@@ -29,4 +30,4 @@
 (defn wrap-noir-session [handler]
   (-> handler
     (noir-session)
-    (wrap-session)))
+    (wrap-session {:store (memory-store mem)})))
