@@ -22,7 +22,7 @@
   [k]
   (clojure.core/get @*noir-session* k))
 
-(defn clear!
+(defn clear! []
   (reset! *noir-session* {}))
 
 (defn remove!
