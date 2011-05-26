@@ -9,90 +9,62 @@
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
+            [noir.exception :as exception]
+            [noir.statuses :as statuses]
+            [noir.options :as options]
             [noir.session :as session]
             [noir.validation :as validation]))
 
-(declare init-routes)
-(def spec-routes (routes (c-route/resources "/")
-                         (ANY "*" [] {:status 404 :body nil})))
-(def *error-pages* (atom {404 (defaults/not-found)
-                          500 (defaults/internal-error)}))
-
-(defn error-page 
-  "Gets the content to display for the given error code"
-  [code]
-  (get @*error-pages* code))
-
-(defn set-error! 
-  "Sets the content to be displayed if there is a response with the given status
-  code. This is used for custom 404 pages, for example."
-  [code content]
-  (swap! *error-pages* assoc code content))
-
-(defn dev-mode? []
-  (= (:mode noir/*options*) :dev))
-
-(defn- wrap-status-pages [handler]
-  (fn [request]
-    (let [{status :status body :body :as resp} (handler request)]
-      (if (and 
-            (not= status 200)
-            (not body))
-        (assoc resp :body (or (error-page status) (error-page 400)))
-        resp))))
-
-(defn- wrap-exceptions [handler]
-  (fn [request]
-    (try
-      (handler request)
-      (catch Exception e
-        (println e)
-        (let [content (if (dev-mode?)
-                        (defaults/stack-trace e)
-                        (error-page 500))]
-          {:status 500
-           :headers {"Content-Type" "text/html"}
-           :body content})))))
-
-(defn- wrap-options [handler opts]
-  (fn [request]
-    (binding [noir/*options* opts]
-      (handler request))))
+(defonce *middleware* (atom #{}))
 
 (defn- wrap-route-updating [handler]
-  (if (dev-mode?)
-    (wrap-reload-modified (fn [request]
-                   (init-routes noir/*options*)
-                   (handler request))
-                 ["src"])
+  (if (options/dev-mode?)
+    (wrap-reload-modified handler ["src"])
     handler))
 
+(defn- wrap-custom-middleware [handler]
+  (loop [cur handler
+         mware @*middleware*]
+    (if-not mware
+      cur
+      (let [[func args] (first mware)
+            neue (apply func cur args)]
+        (recur neue (next mware))))))
+
 (defn- pack-routes []
-  (apply routes (conj (vec (vals @noir/*noir-routes*)) spec-routes)))
+  (apply routes (concat (vals @noir/*pre-routes*) (vals @noir/*noir-routes*) noir/*spec-routes*)))
 
 (defn- init-routes [opts]
-  (binding [noir/*options* opts]
-    (def final-routes
-      ;; this has to be done as a function to delay the evaluation of the list of routes 
-      ;; until the very end, so that we can add routes and get them on the first request
-      ;; as opposed to requiring two refreshes to see a new page.
-      (-> (fn [request] 
-            ((pack-routes) request))
-        (handler/site)
-        (session/wrap-noir-session)
-        (cookie/wrap-noir-cookies)
-        (validation/wrap-noir-validation)
-        (wrap-status-pages)
-        (wrap-file-info)
-        (wrap-route-updating)
-        (wrap-exceptions)
-        (wrap-options opts)))))
+  (binding [options/*options* opts]
+    (-> 
+      (if (options/dev-mode?) 
+        (fn [request] 
+          ;; by doing this as a function we can ensure that any routes added as the
+          ;; result of a modification are evaluated on the first reload.
+          ((pack-routes) request))
+        (pack-routes))
+      (wrap-custom-middleware)
+      (handler/site)
+      (session/wrap-noir-session)
+      (cookie/wrap-noir-cookies)
+      (validation/wrap-noir-validation)
+      (statuses/wrap-status-pages)
+      (wrap-file-info)
+      (wrap-route-updating)
+      (exception/wrap-exceptions)
+      (options/wrap-options opts))))
+
+(defn add-middleware 
+  "Add a middleware function to the noir server. Func is a standard ring middleware
+  function, which will be passed the handler. Any extra args to be applied should be
+  supplied along with the function."
+  [func & args]
+  (swap! *middleware* conj [func args]))
 
 (defn start 
   "Start the noir server bound to the specified port with a map of options. The available
   options are [:mode :ns], where mode should be either :dev or :prod and :ns should be
   the root namespace of your project."
   [port opts]
-  (init-routes opts)
-  (run-jetty (var final-routes) {:port port}))
+  (run-jetty (init-routes opts) {:port port}))
 

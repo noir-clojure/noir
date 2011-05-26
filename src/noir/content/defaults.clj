@@ -1,11 +1,10 @@
 (ns noir.content.defaults
-  (:use noir.content.css
+  (:use noir.core
+        noir.content.css
         hiccup.core
-        hiccup.page-helpers)
-  (:require [noir.core :as noir]
-            [noir.exception :as ex]))
+        hiccup.page-helpers))
 
-(defn noir-layout [& content]
+(defpartial noir-layout [& content]
             (html5
               [:head
                [:title "Noir"]
@@ -13,25 +12,20 @@
               [:body
                content]))
 
-(defn not-found []
+(defpartial not-found []
   (noir-layout
     [:div#not-found
      [:h1 "We seem to have lost that one."]
      [:p "Since we couldn't find the page you were looking for, check to make sure the address is correct."]]
     ))
 
-(defn exception-item [{nams :ns fq :fully-qualified f :file line :line :as ex}]
-  (let [in-ns? (and nams (re-seq
-                           (re-pattern (str (:ns noir/*options*)))
-                           nams))]
-    (html 
+(defpartial exception-item [{nams :ns in-ns? :in-ns? fq :fully-qualified f :file line :line :as ex}]
       [:tr {:class (when in-ns?
                      "mine")}
         [:td.dt f " :: " line]
-        [:td.dd fq]])))
+        [:td.dd fq]])
 
-(defn stack-trace [exc]
-  (let [{exception :exception causes :causes} (ex/parse-ex exc)]
+(defpartial stack-trace [{exception :exception causes :causes}]
     (noir-layout
       [:div#exception
        [:h1 (or (:message exception) "An exception was thrown") [:span " - (" (:class exception) ")"]]
@@ -40,9 +34,9 @@
          [:div.cause
           [:h3 "Caused by: " (:class cause) " - " (:message cause)]
           [:table (map exception-item (:trimmed-elems cause))]])]
-      )))
+      ))
 
-(defn internal-error []
+(defpartial internal-error []
   (noir-layout
     [:div#not-found
      [:h1 "Something very bad has happened."]

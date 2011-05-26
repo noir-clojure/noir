@@ -22,7 +22,7 @@
   [k]
   (clojure.core/get @*noir-session* k))
 
-(defn remove 
+(defn remove!
   "Remove a key from the session"
   [k]
   (swap! *noir-session* dissoc k))

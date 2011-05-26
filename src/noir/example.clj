@@ -9,6 +9,7 @@
             [noir.content.pages :as pages]
             [noir.cookies :as cookie]
             [noir.validation :as vali]
+            [noir.statuses :as statuses]
             [noir.response :as resp]
             [noir.session :as session]))
 
@@ -18,6 +19,28 @@
                [:title "Awesome"]]
               [:body
                content]))
+
+(pre-route "/admin/*" {}
+           (when-not (session/get :admin)
+             (resp/redirect "/login")))
+
+(defpage "/admin/" {}
+         (main-layout
+           [:p "Admin section things"]))
+
+(defpage "/middleware" {m1 :m1 m2 :m2}
+         (main-layout
+           [:p "You added middleware! " m1 " :: " m2]))
+
+(defpage "/logout" {}
+         (session/remove! :admin)
+         (resp/redirect "/"))
+
+(defpage "/login" {}
+         (session/put! :admin true)
+         (main-layout
+           [:p "you are now logged in"]
+           (link-to "/admin/" "Go to the admin section")))
 
 (defpage "/params" {awk :awk} 
          (main-layout
@@ -86,9 +109,17 @@
            [:p "How about your name? " (or (vali/errors? :username) 
                                            "Well, it appears to be the appropriate length.")]))
 
- (server/set-error! 400
-           (main-layout
-             [:p "We couldn't find what you were looking for!"]))
+(statuses/set-page! 400
+                    (main-layout
+                      [:p "We couldn't find what you were looking for!"]))
+
+(defn wrap-key [handler k v]
+  (fn [request]
+    (let [neue (assoc-in request [:params k] v)]
+      (handler neue))))
+
+(server/add-middleware wrap-key :m1 "middleware 1 added this")
+(server/add-middleware wrap-key :m2 "middleware 2 added this")
 
 (defn -main [& m]
   (let [mode (or (first m) :dev)]

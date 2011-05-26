@@ -1,10 +1,13 @@
 (ns noir.core
   (:use hiccup.core
         compojure.core)
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [compojure.route :as c-route]))
 
-(declare *options*)
 (def *noir-routes* (atom {}))
+(def *pre-routes* (atom (sorted-map)))
+(def *spec-routes* [(c-route/resources "/")
+                  (ANY "*" [] {:status 404 :body nil})])
 
 (defn- keyword->symbol [namesp kw]
   (symbol namesp (string/upper-case (subs (str kw) 1))))
@@ -46,3 +49,15 @@
   [route & params]
   (let [{func# :route-fn} (parse-route route)]
     `(~func# ~(first params))))
+
+(defmacro pre-route 
+  "Adds a route to the beginning of the route table and passes the entire request
+  to be destructured and used in the body. These routes are the only ones to make
+  an ordering gaurantee. They will always be in order of ascending specificity (e.g. /* , 
+  /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting 
+  a section based on privileges:
+
+  (pre-route '/admin/*' (when-not (is-admin?) (redirect '/login')))"
+  [route destruct & body]
+  (let [{action# :action url# :url} (parse-route route)]
+    `(swap! *pre-routes* assoc ~url# (~action# ~url# {:as request#} ((fn [~destruct] ~@body) request#)))))

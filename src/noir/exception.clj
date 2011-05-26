@@ -1,7 +1,10 @@
 (ns noir.exception
   (:use clj-stacktrace.core
         clj-stacktrace.repl)
-  (:require [clojure.string :as string]))  
+  (:require [clojure.string :as string]
+            [noir.options :as options]
+            [noir.statuses :as statuses]
+            [noir.content.defaults :as defaults]))  
 
 (defn- route-fn? [k]
   (and k
@@ -22,9 +25,14 @@
                  (if (route-fn? func)
                    (str nams " :: " func-name)
                    (str nams "/" func-name))
-                 (str (:method ex) "." (:class ex)))]
+                 (str (:method ex) "." (:class ex)))
+        in-ns? (and nams (re-seq
+                           (re-pattern (str (options/get :ns)))
+                           nams))
+        ]
     {:fn func-name
      :ns nams
+     :in-ns? in-ns?
      :fully-qualified ns-str
      :annon? anon
      :clj? clj?
@@ -40,3 +48,15 @@
                (assoc cause :trimmed-elems (map ex-item (:trimmed-elems cause))))}
     ))
 
+(defn wrap-exceptions [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception e
+        (println e)
+        (let [content (if (options/dev-mode?)
+                        (defaults/stack-trace (parse-ex e))
+                        (statuses/get-page 500))]
+          {:status 500
+           :headers {"Content-Type" "text/html"}
+           :body content})))))
