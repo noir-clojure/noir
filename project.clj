@@ -1,6 +1,7 @@
 (defproject noir "0.2.7"
             :description "Noir - a clojure web framework"
             :dependencies [[org.clojure/clojure "1.2.1"]
+                           [org.clojure/clojure-contrib "1.2.0"]
                            [compojure "0.6.2"]
                            [ring "0.3.7"]
                            [cssgen "0.2.4"]

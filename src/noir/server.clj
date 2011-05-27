@@ -1,5 +1,7 @@
 (ns noir.server
   (:use compojure.core
+        clojure.java.io
+        clojure.contrib.find-namespaces
         ring.adapter.jetty
         ring.middleware.file-info
         ring.middleware.reload-modified
@@ -53,6 +55,14 @@
       (wrap-route-updating)
       (exception/wrap-exceptions)
       (options/wrap-options opts))))
+
+(defn load-views 
+  "Require all the views in the given dir so that the pages are loaded
+  by the server."
+  [dir]
+  (let [nss (find-namespaces-in-dir (file dir))]
+    (doseq [n nss]
+      (require n))))
 
 (defn add-middleware 
   "Add a middleware function to the noir server. Func is a standard ring middleware
