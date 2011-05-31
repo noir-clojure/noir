@@ -26,7 +26,7 @@
 
 (defn- wrap-custom-middleware [handler]
   (loop [cur handler
-         mware @*middleware*]
+         mware (seq @*middleware*)]
     (if-not mware
       cur
       (let [[func args] (first mware)
