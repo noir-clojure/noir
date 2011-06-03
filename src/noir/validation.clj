@@ -30,7 +30,8 @@
   (let [merge-map (if (get-errors field)
                     {field error}
                     {field [error]})]
-    (swap! *errors* #(merge-with conj % merge-map))))
+    (swap! *errors* #(merge-with conj % merge-map))
+    nil))
 
 (defn rule [passed? [field error]]
   (or passed? 
