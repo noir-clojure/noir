@@ -9,7 +9,7 @@ See example usage here: https://github.com/ibdknox/noir-example
 That example will be getting better soon to show something non-trivial built in it.
 
 To include in a leiningen project, add this to your dependencies:
-[noir "0.2.9"]
+[noir "0.3.0"]
 
 ## License
 
