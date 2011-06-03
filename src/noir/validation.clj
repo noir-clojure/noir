@@ -23,17 +23,20 @@
 (declare *errors*)
 
 ;;errors and rules
+(defn get-errors [field]
+  (get @*errors* field))
+
 (defn set-error [field error]
-  (swap! *errors* #(merge-with conj % {field error})))
+  (let [merge-map (if (get-errors field)
+                    {field error}
+                    {field [error]})]
+    (swap! *errors* #(merge-with conj % merge-map))))
 
 (defn rule [passed? [field error]]
   (or passed? 
       (do 
         (set-error field error)
         false)))
-
-(defn get-errors [field]
-  (get @*errors* field))
 
 (defn errors? [& field]
   (some not-nil? (map get-errors field)))
