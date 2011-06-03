@@ -8,9 +8,11 @@
             (html5
               [:head
                [:title "Noir"]
+               (include-css "/css/reset.css")
                [:style {:type "text/css"} (noir-css)]]
               [:body
-               content]))
+               [:div#wrapper
+                content]]))
 
 (defpartial not-found []
   (noir-layout

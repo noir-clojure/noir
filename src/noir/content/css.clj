@@ -24,8 +24,11 @@
   (css
     (rule "body" 
           dark-background
-          :padding [:30px :50px]
+          :padding [:60px :80px]
           :font-family "'Helvetica Neue',Helvetica,Verdana")
+    (rule "#wrapper"
+          fldi
+          :padding-bottom :100px)
     (rule "h1"
           :margin-bottom :0px
           light-text)
@@ -40,14 +43,27 @@
           :font-family "Monaco, Consolas, 'Courier New'")
     (rule "#header"
           :margin-bottom :50px)
-    (rule ".left"
-          fldi
-          :width "50%")
-    (rule ".right"
-          fldi
-          :width "50%"
-          (rule "& p"
-            :max-width :440px))
+    (rule "ul"
+          (rule "li"
+                fldi
+                :margin-bottom :55px
+                :width "100%"
+                (rule ".left"
+                      fldi
+                      :width "45%"
+                      :margin-right "5%"
+                      (rule "p" 
+                            :padding 0
+                            :margin 0
+                            :font-size :18px
+                            ))
+                (rule ".right"
+                      fldi
+                      :width "50%"
+                      (rule "code"
+                            :width "100%")
+                      (rule "p"
+                            :max-width :440px))))
 
     (rule "#not-found"
           :text-align :center
