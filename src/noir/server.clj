@@ -76,5 +76,9 @@
   options are [:mode :ns], where mode should be either :dev or :prod and :ns should be
   the root namespace of your project."
   [port opts]
-  (run-jetty (init-routes opts) {:port port}))
+  (println "Starting server...")
+  (future (run-jetty (init-routes opts) {:port port}))
+  (println (str "Server started on port [" port "].")) 
+  (println (str "You can view the site at http://localhost:" port)))
+
 
