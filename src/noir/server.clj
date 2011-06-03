@@ -57,7 +57,7 @@
       (options/wrap-options opts))))
 
 (defn load-views 
-  "Require all the views in the given dir so that the pages are loaded
+  "Require all the namespaces in the given dir so that the pages are loaded
   by the server."
   [dir]
   (let [nss (find-namespaces-in-dir (file dir))]
@@ -77,7 +77,7 @@
   the root namespace of your project."
   [port opts]
   (println "Starting server...")
-  (future (run-jetty (init-routes opts) {:port port}))
+  (run-jetty (init-routes opts) {:port port :join? false})
   (println (str "Server started on port [" port "].")) 
   (println (str "You can view the site at http://localhost:" port)))
 
