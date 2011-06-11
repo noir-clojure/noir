@@ -67,11 +67,12 @@
 
     (rule "#not-found"
           :text-align :center
-          :width :500px
+          :width :600px
           :margin [:0px :auto]
           :margin-top :200px
           (rule "h1"
                 emphasis
+                :font-size :32px
                 :margin-bottom :20px
                 ))
 

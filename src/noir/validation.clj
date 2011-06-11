@@ -42,9 +42,9 @@
 (defn errors? [& field]
   (some not-nil? (map get-errors field)))
 
-(defn on-error [field body]
-  (if (get-errors field)
-    body))
+(defn on-error [field func]
+  (if-let [errs (get-errors field)]
+    (func errs)))
 
 ;;middleware
 

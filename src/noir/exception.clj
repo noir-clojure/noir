@@ -53,7 +53,7 @@
     (try
       (handler request)
       (catch Exception e
-        (println e)
+        (.printStackTrace e)
         (let [content (if (options/dev-mode?)
                         (defaults/stack-trace (parse-ex e))
                         (statuses/get-page 500))]
