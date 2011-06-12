@@ -42,13 +42,13 @@
      (html
        ~@body)))
 
-(defmacro render 
+(defn render 
   "Renders the content for a route by calling the page like a function
   with the given param map. Just like with defpage, route can be a vector,
   e.g. [:post '/vals']"
   [route & params]
-  (let [{func# :route-fn} (parse-route route)]
-    `(~func# ~(first params))))
+  (let [{func :route-fn} (parse-route route)]
+    (func (first params))))
 
 (defmacro pre-route 
   "Adds a route to the beginning of the route table and passes the entire request
