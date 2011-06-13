@@ -4,12 +4,28 @@ A framework for writing clojure websites
 
 ## Usage
 
-See example usage here: https://github.com/ibdknox/noir-example
+The best way to get started with noir is by downloading the lein noir plugin:
+```bash
+lein plugin install lein-noir 0.1.1
+lein noir new my-website
+cd my-website
+lein run
+```
+Then simply open a browser up to http://localhost:8080/ and take it for a spin.
 
-That example will be getting better soon to show something non-trivial built in it.
+For an example of what a noir project looks like, check out the [noir-blog](https://github.com/ibdknox/Noir-blog) example project.
 
-To include in a leiningen project, add this to your dependencies:
-[noir "0.3.0"]
+If you want to include Noir in an already created leiningen project, simply add this to your dependencies:
+
+```bash
+[noir "0.4.0"]
+```
+
+## Roadmap
+
+* Full API docs
+* Anotated examples of all public functions
+* A beautiful project website :D
 
 ## License
 
