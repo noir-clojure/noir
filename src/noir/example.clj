@@ -76,6 +76,9 @@
 (defpage "/exception" []
            (/ 1 0))
 
+(defpage "/exception/:blah/*" []
+         (/ 1 0))
+
 (defpage "/multi-cookie" []
          (cookie/put! :a1 "awk")
          (cookie/put! :a2 "awk2")

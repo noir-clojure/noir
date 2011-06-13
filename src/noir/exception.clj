@@ -12,7 +12,10 @@
 
 (defn- key->route-fn [k]
   (if (route-fn? k)
-    (let [with-slahes (string/replace k #"--" "/")
+    (let [with-slahes (-> k
+                        (string/replace #"--" "/")
+                        (string/replace #">" ":")
+                        (string/replace #"<" "*"))
           separated (string/replace with-slahes #"(POST|GET|HEAD|ANY|PUT|DELETE)" #(str (first %1) " :: "))]
       separated)
     k))

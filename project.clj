@@ -9,5 +9,5 @@
                            [clj-stacktrace "0.2.2"]
                            [ring-reload-modified "0.1.0"]
                            [net.java.dev.jets3t/jets3t "0.8.0"]]
-            :dev-dependencies [[lein-clojars "0.6.0"]]
+            :dev-dependencies [[marginalia "0.5.1"]]
             :main noir.example)

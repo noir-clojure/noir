@@ -15,7 +15,10 @@
 
 (defn- route->key [action rte]
   (let [action (string/replace (str action) #".*/" "")]
-    (str action (string/replace rte #"/" "--"))))
+    (str action (-> rte
+                  (string/replace #"/" "--")
+                  (string/replace #":" ">")
+                  (string/replace #"\*" "<")))))
 
 (defn- parse-route [rte]
   (let [[action url] (if (vector? rte)
