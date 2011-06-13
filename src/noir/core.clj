@@ -4,10 +4,11 @@
   (:require [clojure.string :as string]
             [compojure.route :as c-route]))
 
-(def *noir-routes* (atom {}))
-(def *pre-routes* (atom (sorted-map)))
-(def *spec-routes* [(c-route/resources "/")
-                  (ANY "*" [] {:status 404 :body nil})])
+(defonce *noir-routes* (atom {}))
+(defonce *route-funcs* (atom {}))
+(defonce *pre-routes* (atom (sorted-map)))
+(defonce *spec-routes* [(c-route/resources "/")
+                        (ANY "*" [] {:status 404 :body nil})])
 
 (defn- keyword->symbol [namesp kw]
   (symbol namesp (string/upper-case (subs (str kw) 1))))
@@ -33,6 +34,7 @@
     `(do
        (defn ~fn-name# [~destruct]
          ~@body)
+       (swap! *route-funcs* assoc ~(keyword fn-name#) ~fn-name#)
        (swap! *noir-routes* assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
 
 (defmacro defpartial 
@@ -46,9 +48,10 @@
   "Renders the content for a route by calling the page like a function
   with the given param map. Just like with defpage, route can be a vector,
   e.g. [:post '/vals']"
-  [route & params]
-  (let [{func :route-fn} (parse-route route)]
-    (func (first params))))
+  [route & [params]]
+  (let [{fn-name :route-fn} (parse-route route)
+        func (get @*route-funcs* (keyword fn-name))]
+    (func params)))
 
 (defmacro pre-route 
   "Adds a route to the beginning of the route table and passes the entire request
