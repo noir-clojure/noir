@@ -1,6 +1,6 @@
 # Noir
 
-A framework for writing clojure websites
+A framework for writing clojure websites. Noir is currently being used in production at http://www.typewire.io
 
 ## Usage
 
@@ -12,8 +12,6 @@ lein noir new my-website
 cd my-website
 lein run
 ```
-
-Then simply open a browser up to http://localhost:8080/ and take it for a spin.
 
 For an example of what a noir project looks like, check out the [noir-blog](https://github.com/ibdknox/Noir-blog) example project.
 
@@ -31,6 +29,6 @@ If you want to include Noir in an already created leiningen project, simply add 
 
 ## License
 
-Copyright (C) 2011 FIXME
+Copyright (C) 2011 Chris Granger
 
 Distributed under the Eclipse Public License, the same as Clojure.
