@@ -17,7 +17,7 @@ For an example of what a noir project looks like, check out the [noir-blog](http
 
 If you want to include Noir in an already created leiningen project, simply add this to your dependencies:
 
-```Clojure
+```clojure
 [noir "0.4.0"]
 ```
 
