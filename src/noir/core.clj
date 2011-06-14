@@ -1,4 +1,5 @@
 (ns noir.core
+  "Functions to work with partials and pages."
   (:use hiccup.core
         compojure.core)
   (:require [clojure.string :as string]

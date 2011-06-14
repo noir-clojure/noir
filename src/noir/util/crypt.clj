@@ -1,4 +1,5 @@
 (ns noir.util.crypt
+  "Simple functions for encrypting strings and comparing them. Typically used for storing passwords."
   (:refer-clojure :exclude [compare])
   (:require [ring.util.codec :as codec])
   (:import java.security.MessageDigest java.security.SecureRandom))
@@ -13,6 +14,7 @@
   (byte-array (take 8 (codec/base64-decode stored))))
 
 (defn encrypt 
+  "Encrypt the given string with a generated or supplied salt. Uses SHA-1 encryption."
   ;; generate a salt
   ([raw] (encrypt (gen-salt) raw))
   ([salt raw]
@@ -25,6 +27,8 @@
                                (. mdig update salt)
                                (. mdig digest raw-bytes))))))
 
-(defn compare [raw stored]
-  (= (encrypt (ext-salt stored) raw) stored))
+(defn compare 
+  "Compare a raw string with an already encrypted string"
+  [raw encrypted]
+  (= (encrypt (ext-salt encrypted) raw) encrypted))
 

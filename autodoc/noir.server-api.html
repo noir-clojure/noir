@@ -1,0 +1,137 @@
+<html>
+  <head>
+    <title>noir.server - noir nil API documentation</title>
+    <link href="static/favicon.png" rel="icon" />
+    <link href="static/favicon.png" rel="shortcut icon" />
+    <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/wiki.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/internal.css" rel="stylesheet" />
+    <!-- TODO: are we using these (from clojure.org)? If so, add the files -->
+    <script src="file/view/code_highlighter.js" type="text/javascript"></script>
+    <script src="file/view/clojure.js" type="text/javascript"></script>
+    <style>.menuWrapper{height: 36px;}</style>
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="http://www.wikispaces.com/_/2009051601/s/internal_ie.css" type="text/css" />
+    <![endif]-->
+  </head>
+<!--
+This document was auto-generated from the source by the clojure autodoc system.
+To report errors or ask questions about the overall documentation structure, formatting,
+etc., contact Tom Faulhaber (google mail name: tomfaulhaber).
+For errors in the documentation of a particular namespace, contact the author of that
+namespace.
+-->
+  <body>
+    <div id="AllContentContainer">
+      <div id="Header">
+	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
+	<h1><a title="page header title" id="page-header" href="index.html">noir</a></h1>
+      </div>
+      <div id="leftcolumn"><div style="text-align: center;"></div>
+<div class="menu">
+  <div class="WikiCustomNav WikiElement wiki">
+    <span class="toc-header"><span id="project-name">noir</span> <span id="version"></span> API</span><br />
+    <ul>
+      <li><a class="wiki_link" href="index.html">Overview</a></li>
+      <li><a class="wiki_link" href="api-index.html">API Index</a></li>
+    </ul>
+    <span class="toc-header">Namespaces</span>
+    <ul id="left-sidebar-list">
+      <li><a href="noir.cookies-api.html" class="wiki_link">noir.cookies</a></li><li><a href="noir.core-api.html" class="wiki_link">noir.core</a></li><li><a href="noir.exception-api.html" class="wiki_link">noir.exception</a></li><li><a href="noir.options-api.html" class="wiki_link">noir.options</a></li><li><a href="noir.response-api.html" class="wiki_link">noir.response</a></li><li><a href="noir.server-api.html" class="wiki_link">noir.server</a></li><li><a href="noir.session-api.html" class="wiki_link">noir.session</a></li><li><a href="noir.statuses-api.html" class="wiki_link">noir.statuses</a></li><li><a href="noir.util.crypt-api.html" class="wiki_link">noir.util.crypt</a></li><li><a href="noir.utils.s3-api.html" class="wiki_link">noir.utils.s3</a></li><li><a href="noir.validation-api.html" class="wiki_link">noir.validation</a></li>
+    </ul>
+    
+    <a href="http://clojure.org" class="wiki_link">Clojure Home</a>
+  </div>
+</div>
+</div>
+      <div id="rightcolumn">
+	<div id="Content">
+	  <div class="contentBox"><div class="innerContentBox">
+              <div id="content_view" class="wiki wikiPage">
+                <div id="right-sidebar"><div id="toc">
+  <h1 class="nopad">Table of Contents</h1>
+  <div style="margin-left: 1em;" class="toc-section">
+    <a href="#toc0">Overview</a>
+    <div style="margin-left: 1em;" class="toc-entry">
+      <a href="#noir.server/add-middleware">add-middleware</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#noir.server/load-views">load-views</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#noir.server/start">start</a>
+    </div>
+    <br />
+  </div>
+</div>
+</div>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">noir.server</span>
+  - <span id="header-project">noir</span> <span id="header-version"></span> (<span id="header-status"></span>)
+  </h1>
+
+<br />Usage:
+<pre>
+(ns your-namespace
+  (:require <span id="long-name">noir.server</span>))
+</pre><pre>
+</pre><h2>Overview</h2>
+<pre id="namespace-docstr">A collection of functions to handle Noir's server and add middleware to the stack.</pre>
+
+
+<br />
+<h2>Public Variables and Functions</h2>
+<div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="noir.server/add-middleware">add-middleware</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (add-middleware func &amp; args)
+</pre>
+  <pre id="var-docstr">Add a middleware function to the noir server. Func is a standard ring middleware
+function, which will be passed the handler. Any extra args to be applied should be
+supplied along with the function.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="noir.server/load-views">load-views</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (load-views dir)
+</pre>
+  <pre id="var-docstr">Require all the namespaces in the given dir so that the pages are loaded
+by the server.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="noir.server/start">start</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (start port opts)
+</pre>
+  <pre id="var-docstr">Start the noir server bound to the specified port with a map of options. The available
+options are [:mode :ns], where mode should be either :dev or :prod and :ns should be
+the root namespace of your project.</pre>
+  
+  
+  
+</div>
+
+
+</div>
+              </div>
+            </div>
+          </div>
+	</div>
+	<div id="foot">
+	  <div style="text-align: center;" id="copyright">No copyright info </div>
+	</div>
+      </div>
+      <div id="DesignedBy">Logo &amp; site design by <a title="Visit Tom Hickey's website." href="http://www.tomhickey.com">Tom Hickey</a>.<br />
+      Clojure auto-documentation system by Tom Faulhaber.</div>
+    </div>
+    <!-- /AllContentContainer -->
+  </body>
+
+</html>

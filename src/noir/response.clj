@@ -1,4 +1,5 @@
 (ns noir.response
+  "Simple response helpers to change the content type, redirect, or return a canned response"
   (:require [clojure.contrib.json :as json]))
 
 (defn xml 

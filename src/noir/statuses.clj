@@ -1,4 +1,7 @@
 (ns noir.statuses
+  "If no pages are defined that match a request, a status page is used based on the
+  the HTTP status code of the response. This contains the function necessary to get
+  or set these status pages."
   (:require [noir.content.defaults :as defaults]))
 
 (def *status-pages* (atom {404 (defaults/not-found)

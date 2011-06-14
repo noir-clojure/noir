@@ -1,4 +1,5 @@
 (ns noir.cookies
+  "Stateful access to cookie values"
   (:refer-clojure :exclude [get remove])
   (:use ring.middleware.cookies))
 

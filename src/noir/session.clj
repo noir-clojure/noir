@@ -1,4 +1,5 @@
 (ns noir.session
+  "Stateful session handling functions"
   (:refer-clojure :exclude [get remove])
   (:use ring.middleware.session
         ring.middleware.session.memory))
@@ -22,7 +23,9 @@
   [k]
   (clojure.core/get @*noir-session* k))
 
-(defn clear! []
+(defn clear! 
+  "Remove all data from the session and start over cleanly."
+  []
   (reset! *noir-session* {}))
 
 (defn remove!

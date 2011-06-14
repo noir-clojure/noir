@@ -1,4 +1,5 @@
 (ns noir.exception
+  "Functions to handle exceptions within a Noir server gracefully."
   (:use clj-stacktrace.core
         clj-stacktrace.repl)
   (:require [clojure.string :as string]
