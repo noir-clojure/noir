@@ -20,6 +20,7 @@ If you want to include Noir in an already created leiningen project, simply add 
 
 ## Docs
 [Autodoc](http://ibdknox.github.com/noir/index.html)
+
 [Noir-blog](https://github.com/ibdknox/Noir-blog) - a complete example blog built in Noir.
 
 ## Roadmap
