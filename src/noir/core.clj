@@ -42,7 +42,7 @@
        (swap! *noir-routes* assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
 
 (defmacro defpartial 
-  "Create a function that returns html using hiccup. The function is then callable using the given name."
+  "Create a function that returns html using hiccup. The function is callable with the given name."
   [fname params & body]
   `(defn ~fname ~params
      (html

@@ -7,12 +7,12 @@
 ;; validation helpers
 
 (defn has-value? 
-  "Returns true if v is truthy and it is not an empty string."
+  "Returns true if v is truthy and not an empty string."
   [v]
   (and v (not= v "")))
 
 (defn has-values? 
-  "Returns true if the entire collection has-value?"
+  "Returns true if all members of the collection has-value? This works on maps as well."
   [coll]
   (let [vs (if (map? coll)
              (vals coll)
@@ -49,7 +49,7 @@
 
 (defn set-error 
   "Explicitly set an error for the given field. This can be used to 
-  create complex error case, such as in a multi-step login process."
+  create complex error cases, such as in a multi-step login process."
   [field error]
   (let [merge-map (if (get-errors field)
                     {field error}
@@ -59,7 +59,7 @@
 
 (defn rule 
   "If the passed? condition is not met, add the error text to the given field:
-  (rule (not-nil? nil) [:username \"Usernames must have a value.\"])"
+  (rule (not-nil? username) [:username \"Usernames must have a value.\"])"
   [passed? [field error]]
   (or passed? 
       (do 

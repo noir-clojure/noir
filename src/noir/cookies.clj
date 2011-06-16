@@ -11,8 +11,8 @@
 
 (defn put! 
   "Add a new cookie whose name is k and has the value v. If v is a string
-  a cookie map is created with :path '/'. To set custom attributes, such as,
-  expires provide a map as v."
+  a cookie map is created with :path '/'. To set custom attributes, such as
+  \"expires\", provide a map as v."
   [k v]
   (let [props (if (map? v)
                 v
