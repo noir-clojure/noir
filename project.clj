@@ -1,4 +1,4 @@
-(defproject noir "0.4.0"
+(defproject noir "1.0.0"
             :description "Noir - a clojure web framework"
             :dependencies [[org.clojure/clojure "1.2.1"]
                            [org.clojure/clojure-contrib "1.2.0"]
