@@ -1,5 +1,6 @@
 (ns noir.response
   "Simple response helpers to change the content type, redirect, or return a canned response"
+  (:refer-clojure :exclude [empty])
   (:require [clojure.contrib.json :as json]))
 
 (defn xml 
@@ -27,7 +28,7 @@
    :headers {"Location" url}
    :body ""})
 
-(defn empty-page 
+(defn empty 
   "Return a successful, but completely empty response"
   []
   {:status 200
