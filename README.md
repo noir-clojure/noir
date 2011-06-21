@@ -4,7 +4,7 @@ A framework for writing clojure websites. Noir is currently being used in produc
 
 ## Usage
 
-The best way to get started with noir is by downloading the lein noir plugin:
+The best way to get started with noir is by downloading the lein noir plugin for [leiningen](https://github.com/technomancy/leiningen):
 
 ```bash
 lein plugin install lein-noir 0.1.1
