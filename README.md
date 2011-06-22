@@ -15,13 +15,11 @@ lein run
 If you want to include Noir in an already created leiningen project, simply add this to your dependencies:
 
 ```clojure
-[noir "0.4.0"]
+[noir "1.0.0"]
 ```
 
 ## Docs
-* [Autodoc](http://ibdknox.github.com/noir/index.html)
-* [Noir-blog](https://github.com/ibdknox/Noir-blog) - a complete example blog built in Noir.
-* [Google group] (http://groups.google.com/group/clj-noir)
+* [Web Noir](http://www.webnoir.org)
 
 ## Roadmap
 
