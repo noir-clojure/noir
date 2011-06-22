@@ -1,4 +1,4 @@
-(ns noir.utils.s3
+(ns noir.util.s3
   "Basic S3 utils"
   (:refer-clojure :exclude [list])
   (:import 
