@@ -14,13 +14,13 @@
   (byte-array (take 8 (codec/base64-decode stored))))
 
 (defn encrypt 
-  "Encrypt the given string with a generated or supplied salt. Uses SHA-1 encryption."
+  "Encrypt the given string with a generated or supplied salt. Uses SHA-256 encryption."
   ;; generate a salt
   ([raw] (encrypt (gen-salt) raw))
   ([salt raw]
     ;; append the salt to the front
    (str (codec/base64-encode salt) 
-        (codec/base64-encode (let [mdig (. MessageDigest getInstance "SHA-1")
+        (codec/base64-encode (let [mdig (. MessageDigest getInstance "SHA-256")
                                    raw-bytes (codec/base64-decode raw)]
                                (. mdig reset)
                                ;; use the salt to encrypt

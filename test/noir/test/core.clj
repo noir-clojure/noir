@@ -1,6 +1,10 @@
-(ns ryla.test.core
-  (:use [ryla.core])
-  (:use [clojure.test]))
+(ns noir.test.core
+  (:use [noir.core])
+  (:use [clojure.test])
+  (:require [noir.util.crypt :as crypt]))
 
-(deftest replace-me ;; FIXME: write
-  (is false "No tests have been written."))
+(deftest hashing
+         (let [pass (crypt/encrypt "password")]
+           (is (crypt/compare "password" pass)))) 
+
+(run-tests)
