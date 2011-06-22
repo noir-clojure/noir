@@ -12,7 +12,7 @@
                         (ANY "*" [] {:status 404 :body nil})])
 
 (defn- keyword->symbol [namesp kw]
-  (symbol namesp (string/upper-case (subs (str kw) 1))))
+  (symbol namesp (string/upper-case (name kw))))
 
 (defn- route->key [action rte]
   (let [action (string/replace (str action) #".*/" "")]
