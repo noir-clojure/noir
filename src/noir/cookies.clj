@@ -6,9 +6,6 @@
 (def *cur-cookies* nil)
 (def *new-cookies* nil)
 
-(defn- keyword->str [kw]
-  (subs (str kw) 1))
-
 (defn put! 
   "Add a new cookie whose name is k and has the value v. If v is a string
   a cookie map is created with :path '/'. To set custom attributes, such as
@@ -23,7 +20,7 @@
   "Get the value of a cookie from the request. k can either be a string or keyword"
   [k]
   (let [str-k (if (keyword? k)
-                (keyword->str k)
+                (name k)
                 k)]
     (get-in *cur-cookies* [str-k :value])))
 
