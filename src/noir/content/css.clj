@@ -1,4 +1,6 @@
-(ns noir.content.css
+(ns 
+  #^{:skip-wiki true}
+  noir.content.css
   (:use cssgen))
 
 (def fldi (mixin :float :left

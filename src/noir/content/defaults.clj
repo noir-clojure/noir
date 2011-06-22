@@ -1,4 +1,6 @@
-(ns noir.content.defaults
+(ns 
+  #^{:skip-wiki true}
+  noir.content.defaults
   (:use noir.core
         noir.content.css
         hiccup.core

@@ -12,4 +12,4 @@
                            [org.mindrot/jbcrypt "0.3m"]]
             :dev-dependencies [[marginalia "0.5.1"]
                                [org.clojars.rayne/autodoc "0.8.0-SNAPSHOT"]]
-            :main noir.example)
+            :autodoc {:name "Noir" :page-title "Noir Docs" :load-except-list [#"noir\/content.*"]})
