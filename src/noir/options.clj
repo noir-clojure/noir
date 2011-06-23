@@ -8,8 +8,10 @@
 
 (defn get 
   "Get an option from the noir options map"
-  [k]
-  (clojure.core/get *options* k))
+  ([k default]
+   (clojure.core/get *options* k default))
+  ([k]
+   (clojure.core/get *options* k)))
 
 (defn dev-mode? 
   "Returns if the server is currently in development mode"
