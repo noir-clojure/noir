@@ -18,11 +18,12 @@
 
 (defn get
   "Get the value of a cookie from the request. k can either be a string or keyword"
-  [k]
-  (let [str-k (if (keyword? k)
-                (name k)
-                k)]
-    (get-in *cur-cookies* [str-k :value])))
+  ([k] (get k nil))
+  ([k default] 
+   (let [str-k (name k)]
+     (if-let [v (get-in *cur-cookies* [str-k :value])]
+       v
+       default))))
 
 (defn noir-cookies [handler]
   (fn [request]

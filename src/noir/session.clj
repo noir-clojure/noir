@@ -2,7 +2,8 @@
   "Stateful session handling functions"
   (:refer-clojure :exclude [get remove])
   (:use ring.middleware.session
-        ring.middleware.session.memory))
+        ring.middleware.session.memory)
+  (:require [noir.options :as options]))
 
 (declare *noir-session*)
 (defonce mem (atom {}))
@@ -20,8 +21,9 @@
 
 (defn get 
   "Get the key's value from the session, returns nil if it doesn't exist."
-  [k]
-  (clojure.core/get @*noir-session* k))
+  ([k] (get k nil))
+  ([k default]
+    (clojure.core/get @*noir-session* k default)))
 
 (defn clear! 
   "Remove all data from the session and start over cleanly."
