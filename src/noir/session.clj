@@ -36,4 +36,4 @@
 (defn wrap-noir-session [handler]
   (-> handler
     (noir-session)
-    (wrap-session {:store (memory-store mem)})))
+    (wrap-session {:store (options/get :store (memory-store mem))})))
