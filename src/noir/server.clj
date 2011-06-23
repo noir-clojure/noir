@@ -2,7 +2,7 @@
   "A collection of functions to handle Noir's server and add middleware to the stack."
   (:use compojure.core
         clojure.java.io
-        clojure.contrib.find-namespaces
+        clojure.tools.namespace
         ring.adapter.jetty
         ring.middleware.file-info
         ring.middleware.reload-modified

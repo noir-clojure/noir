@@ -1,7 +1,7 @@
 (ns noir.response
   "Simple response helpers to change the content type, redirect, or return a canned response"
   (:refer-clojure :exclude [empty])
-  (:require [clojure.contrib.json :as json]))
+  (:require [clj-json.core :as json]))
 
 (defn xml 
   "Wraps the response with the content type for xml and sets the body to the content."
@@ -13,7 +13,7 @@
   "Wraps the response in the json content type and stringifies the given content"
   [content]
   {:headers {"Content-Type" "application/json"}
-   :body (json/json-str content)})
+   :body (json/generate-string content)})
 
 (defn status 
   "Wraps the content in the given status code"

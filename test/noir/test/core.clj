@@ -5,6 +5,7 @@
   (:require [noir.util.crypt :as crypt]
             [noir.session :as session]
             [noir.options :as options]
+            [noir.response :as resp]
             [noir.cookies :as cookies]))
 
 (deftest hashing
@@ -25,3 +26,9 @@
          (with-noir
            (is (nil? (options/get :noir)))
            (is (= "noir" (options/get :noir "noir")))))
+
+(deftest json-resp
+         (with-noir
+           (is (= (resp/json {:noir "web"})
+                  {:headers {"Content-Type" "application/json"}
+                   :body "{\"noir\":\"web\"}"}))))
