@@ -1,5 +1,5 @@
 (ns noir.util.crypt
-  "Simple functions for encrypting strings and comparing them. Typically used for storing passwords."
+  "Simple functions for hashing strings and comparing them. Typically used for storing passwords."
   (:refer-clojure :exclude [compare])
   (:import [org.mindrot.jbcrypt BCrypt]))
 
@@ -10,7 +10,7 @@
    (BCrypt/gensalt)))
 
 (defn encrypt 
-  "Encrypt the given string with a generated or supplied salt. Uses SHA-256 encryption."
+  "Encrypt the given string with a generated or supplied salt. Uses BCrypt for strong hashing."
   ;; generate a salt
   ([salt raw] (BCrypt/hashpw raw salt))
   ([raw] (encrypt (gen-salt) raw)))
