@@ -74,9 +74,12 @@
 
 (defn start 
   "Start the noir server bound to the specified port with a map of options. The available
-  options are [:mode :ns], where mode should be either :dev or :prod and :ns should be
-  the root namespace of your project."
-  [port opts]
+  options are:
+  
+  :mode - either :dev or :prod
+  :ns - the root namepace of your project
+  :session-store - an alternate store for session handling"
+  [port & [opts]]
   (println "Starting server...")
   (run-jetty (init-routes opts) {:port port :join? false})
   (println (str "Server started on port [" port "].")) 

@@ -1,5 +1,6 @@
 (ns noir.session
-  "Stateful session handling functions"
+  "Stateful session handling functions. Uses a memory-store by default, but can use a custom store 
+  by supplying a :session-store option to server/start."
   (:refer-clojure :exclude [get remove])
   (:use ring.middleware.session
         ring.middleware.session.memory)
@@ -38,4 +39,4 @@
 (defn wrap-noir-session [handler]
   (-> handler
     (noir-session)
-    (wrap-session {:store (options/get :store (memory-store mem))})))
+    (wrap-session {:store (options/get :session-store (memory-store mem))})))
