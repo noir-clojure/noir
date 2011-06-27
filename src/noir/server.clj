@@ -57,6 +57,13 @@
       (exception/wrap-exceptions)
       (options/wrap-options opts))))
 
+(defn gen-handler 
+  "Get a full Noir request handler for use with plugins like lein-ring or lein-beanstalk. 
+  If used in a definition, this must come after views have been loaded to ensure that the
+  routes have already been added to the route table."
+  [& [opts]]
+  (init-routes opts))
+
 (defn load-views 
   "Require all the namespaces in the given dir so that the pages are loaded
   by the server."
