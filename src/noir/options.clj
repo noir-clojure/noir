@@ -25,7 +25,7 @@
   (= (get :mode) :dev))
 
 (defn wrap-options [handler opts]
-  (let [final-opts (compile-options)]
+  (let [final-opts (compile-options opts)]
     (fn [request]
       (binding [*options* final-opts]
         (handler request)))))
