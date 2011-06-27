@@ -38,7 +38,7 @@
   (apply routes (concat (vals @noir/*pre-routes*) (vals @noir/*noir-routes*) noir/*spec-routes*)))
 
 (defn- init-routes [opts]
-  (binding [options/*options* opts]
+  (binding [options/*options* (options/compile-options opts)]
     (-> 
       (if (options/dev-mode?) 
         (fn [request] 

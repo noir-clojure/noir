@@ -6,6 +6,12 @@
 (def default-opts {:ns (gensym)
                    :mode :dev})
 
+(defn compile-options
+  [opts]
+  (if (map? opts)
+    (merge default-opts opts)
+    default-opts))
+
 (defn get 
   "Get an option from the noir options map"
   ([k default]
@@ -19,7 +25,8 @@
   (= (get :mode) :dev))
 
 (defn wrap-options [handler opts]
-  (fn [request]
-    (binding [*options* (merge default-opts opts)]
-      (handler request))))
+  (let [final-opts (compile-options)]
+    (fn [request]
+      (binding [*options* final-opts]
+        (handler request)))))
 
