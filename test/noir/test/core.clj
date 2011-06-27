@@ -4,6 +4,7 @@
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
             [noir.session :as session]
+            [noir.server :as server]
             [noir.options :as options]
             [noir.response :as resp]
             [noir.cookies :as cookies]))
@@ -29,6 +30,15 @@
 
 (deftest json-resp
          (with-noir
-           (is (= (resp/json {:noir "web"})
-                  {:headers {"Content-Type" "application/json"}
-                   :body "{\"noir\":\"web\"}"}))))
+           (-> (resp/json {:noir "web"})
+             (has-content-type (content-types :json))
+             (has-body "{\"noir\":\"web\"}"))))
+
+(defpage "/test" []
+         "Hello")
+
+(deftest route-test
+         (let [handler (server/gen-handler)]
+           (-> (handler (request "/test"))
+             (has-status 200)
+             (has-body "Hello"))))
