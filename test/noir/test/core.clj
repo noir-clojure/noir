@@ -4,7 +4,6 @@
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
             [noir.session :as session]
-            [noir.server :as server]
             [noir.options :as options]
             [noir.response :as resp]
             [noir.cookies :as cookies]))
@@ -34,11 +33,10 @@
              (has-content-type (content-types :json))
              (has-body "{\"noir\":\"web\"}"))))
 
-(defpage "/test" []
-         "Hello")
+(defpage "/test" {:keys [nme]}
+         (str "Hello " nme))
 
 (deftest route-test
-         (let [handler (server/gen-handler)]
-           (-> (handler (request "/test"))
-             (has-status 200)
-             (has-body "Hello"))))
+         (-> (send-request "/test" {"nme" "chris"})
+           (has-status 200)
+           (has-body "Hello chris")))

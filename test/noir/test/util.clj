@@ -1,6 +1,7 @@
 (ns noir.test.util
   (:use clojure.test)
-  (:require [noir.session :as session]
+  (:require [noir.server :as server]
+            [noir.session :as session]
             [noir.cookies :as cookies]
             [noir.options :as options]))
 
@@ -26,11 +27,15 @@
   (is (= cont (get resp :body)))
   resp)
 
-(defn request [route]
+(defn make-request [route & [params]]
   (let [[method uri] (if (vector? route)
                        route
                        [:get route])]
-    {:uri uri :request-method method}))
+    {:uri uri :request-method method :params params}))
+
+(defn send-request [route & [params]]
+  (let [handler (server/gen-handler)]
+    (handler (make-request route params))))
     
 
 
