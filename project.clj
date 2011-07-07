@@ -13,5 +13,5 @@
                            [org.mindrot/jbcrypt "0.3m"]]
             :dev-dependencies [[marginalia "0.6.0"]
                                [org.clojars.rayne/autodoc "0.8.0-SNAPSHOT"]
-                               [swank-clojure "1.4.0-SNAPSHOT"]]
+                               [swank-clojure "1.3.1"]]
             :autodoc {:name "Noir" :page-title "Noir Docs" :load-except-list [#"noir\/content.*"]})
