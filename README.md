@@ -23,7 +23,7 @@ If you want to include Noir in an already created leiningen project, simply add 
 
 ## Roadmap
 
-* Anotated examples of all public functions
+* Annotated examples of all public functions
 * More tutorials
 
 ## License
