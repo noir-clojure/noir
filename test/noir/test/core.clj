@@ -3,6 +3,8 @@
         [noir.test.util])
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
+            [noir.server :as server]
+            [noir.util.middleware :as middleware]
             [noir.session :as session]
             [noir.options :as options]
             [noir.response :as resp]
@@ -40,3 +42,9 @@
          (-> (send-request "/test" {"nme" "chris"})
            (has-status 200)
            (has-body "Hello chris")))
+
+(deftest wrap-utf
+         (server/add-middleware middleware/wrap-utf-8)
+         (-> (send-request "/test" {"nme" "chris"})
+           (has-content-type "text/html; charset=utf-8")))
+
