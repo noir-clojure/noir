@@ -17,6 +17,7 @@
 (defn- route->key [action rte]
   (let [action (string/replace (str action) #".*/" "")]
     (str action (-> rte
+                  (string/replace #"\." "!dot!")
                   (string/replace #"/" "--")
                   (string/replace #":" ">")
                   (string/replace #"\*" "<")))))

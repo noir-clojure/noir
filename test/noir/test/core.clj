@@ -1,6 +1,6 @@
 (ns noir.test.core
   (:use [noir.core]
-        [noir.test.util])
+        [noir.util.test])
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
             [noir.server :as server]
@@ -42,6 +42,15 @@
          (-> (send-request "/test" {"nme" "chris"})
            (has-status 200)
            (has-body "Hello chris")))
+
+(defpage "/test.json" []
+         (resp/json {:json "text"}))
+
+(deftest route-dot-test
+         (-> (send-request "/test.json")
+           (has-status 200)
+           (has-content-type (content-types :json))
+           (has-body "{\"json\":\"text\"}")))
 
 (deftest wrap-utf
          (server/add-middleware middleware/wrap-utf-8)

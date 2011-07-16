@@ -14,6 +14,7 @@
 (defn- key->route-fn [k]
   (if (route-fn? k)
     (let [with-slahes (-> k
+                        (string/replace #"!dot!" ".")
                         (string/replace #"--" "/")
                         (string/replace #">" ":")
                         (string/replace #"<" "*"))

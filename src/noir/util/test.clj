@@ -1,4 +1,4 @@
-(ns noir.test.util
+(ns noir.util.test
   (:use clojure.test)
   (:require [noir.server :as server]
             [noir.session :as session]
@@ -37,6 +37,7 @@
   (let [handler (server/gen-handler)]
     (handler (make-request route params))))
     
+
 
 
 
