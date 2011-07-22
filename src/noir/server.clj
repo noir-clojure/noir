@@ -20,6 +20,8 @@
 
 (defonce *middleware* (atom #{}))
 
+(defonce *server* (ref {}))
+
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
     (wrap-reload-modified handler ["src"])
@@ -39,9 +41,9 @@
 
 (defn- init-routes [opts]
   (binding [options/*options* (options/compile-options opts)]
-    (-> 
-      (if (options/dev-mode?) 
-        (fn [request] 
+    (->
+      (if (options/dev-mode?)
+        (fn [request]
           ;; by doing this as a function we can ensure that any routes added as the
           ;; result of a modification are evaluated on the first reload.
           ((pack-routes) request))
@@ -57,14 +59,14 @@
       (exception/wrap-exceptions)
       (options/wrap-options opts))))
 
-(defn gen-handler 
-  "Get a full Noir request handler for use with plugins like lein-ring or lein-beanstalk. 
+(defn gen-handler
+  "Get a full Noir request handler for use with plugins like lein-ring or lein-beanstalk.
   If used in a definition, this must come after views have been loaded to ensure that the
   routes have already been added to the route table."
   [& [opts]]
   (init-routes opts))
 
-(defn load-views 
+(defn load-views
   "Require all the namespaces in the given dir so that the pages are loaded
   by the server."
   [dir]
@@ -72,24 +74,59 @@
     (doseq [n nss]
       (require n))))
 
-(defn add-middleware 
+(defn add-middleware
   "Add a middleware function to the noir server. Func is a standard ring middleware
   function, which will be passed the handler. Any extra args to be applied should be
   supplied along with the function."
   [func & args]
   (swap! *middleware* conj [func args]))
 
-(defn start 
+(defn start
   "Start the noir server bound to the specified port with a map of options. The available
   options are:
-  
+
   :mode - either :dev or :prod
   :ns - the root namepace of your project
   :session-store - an alternate store for session handling"
   [port & [opts]]
-  (println "Starting server...")
-  (run-jetty (init-routes opts) {:port port :join? false})
-  (println (str "Server started on port [" port "].")) 
-  (println (str "You can view the site at http://localhost:" port)))
+  (if (nil? (server port))
+    (do
+      (println "Starting server...")
+      ;; keep a handle to the new server
+      (dosync (commute *server* conj
+                [port
+                  (run-jetty (init-routes opts) {:port port :join? false})]))
+      (println (str "Server started on port [" port "]."))
+      (println (str "You can view the site at http://localhost:" port)))
+    (println "Server already exists for port" port)))
 
+(defn server
+  "Return the noir server bound to the specified port."
+  [port]
+  (get (deref *server*) port))
+
+(defn stop
+  "Stop the noir server bound to the specified port."
+  [port]
+  (let [server (server port)]
+    (if (nil? server) (println "No server running on port" port)
+      (.stop server))))
+
+(defn delete
+  "Stop the noir server bound to the specified port, and drop its reference."
+  [port]
+  (let [server (server port)]
+    (if (nil? server) (println "No server running on port" port)
+      (do
+        (.stop server)
+        (dosync (commute *server* dissoc port))))))
+
+(defn restart
+  "Restart a noir server bound to the specified port."
+  [port]
+  (let [server (server port)]
+    (if (nil? server) (println "No server running on port" port)
+      (do
+        (.stop server)
+        (.start server)))))
 
