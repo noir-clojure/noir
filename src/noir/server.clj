@@ -80,16 +80,28 @@
   (swap! *middleware* conj [func args]))
 
 (defn start 
-  "Start the noir server bound to the specified port with a map of options. The available
-  options are:
+  "Create a noir server bound to the specified port with a map of options and return it. 
+  The available options are:
   
   :mode - either :dev or :prod
   :ns - the root namepace of your project
   :session-store - an alternate store for session handling"
   [port & [opts]]
   (println "Starting server...")
-  (run-jetty (init-routes opts) {:port port :join? false})
-  (println (str "Server started on port [" port "].")) 
-  (println (str "You can view the site at http://localhost:" port)))
+  (let [server (run-jetty (init-routes opts) {:port port :join? false})]
+    (println (str "Server started on port [" port "].")) 
+    (println (str "You can view the site at http://localhost:" port))
+    server))
+
+(defn stop
+  "Stop a noir server"
+  [server]
+  (.stop server))
+
+(defn restart
+  "Restart a noir server"
+  [server]
+  (stop server)
+  (.start server))
 
 
