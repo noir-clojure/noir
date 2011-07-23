@@ -19,6 +19,10 @@
            (is (nil? (session/get :noir)))
            (is (= "noir" (session/get :noir "noir")))))
 
+(deftest flash-get-default
+         (with-noir
+           (is (nil? (session/flash-get :noir)))))
+          
 (deftest cookies-get-default
          (with-noir
            (is (nil? (cookies/get :noir)))

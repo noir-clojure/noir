@@ -48,10 +48,11 @@
                                     (assoc-in [:outgoing k] b)
                                     (assoc-in [:incoming k] b))) v))
 
-(defn flash-get [k]
-  (try (-> @*noir-flash*
-      :incoming k)
-       (catch Exception _ nil)))  
+(defn flash-get
+  "Get the value from the flash, returns nil if doesn't exist."
+  ([k] (get k nil))
+  ([k default]
+     (clojure.core/get @*noir-flash* k default)))
 
 (defn wrap-noir-session [handler]
   (-> handler
