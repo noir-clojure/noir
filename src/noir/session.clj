@@ -9,12 +9,6 @@
 (declare *noir-session*)
 (defonce mem (atom {}))
 
-(defn noir-session [handler]
-  (fn [request]
-    (binding [*noir-session* (atom (:session request))]
-      (let [resp (handler request)]
-        (assoc resp :session @*noir-session*)))))
-
 (defn put! 
   "Associates the key with the given value in the session"
   [k v]
@@ -35,6 +29,27 @@
   "Remove a key from the session"
   [k]
   (swap! *noir-session* dissoc k))
+
+(defn flash-put!
+  "Store a value with a lifetime of one retrieval (on the first flash-get,
+  it is removed). This is often used for passing small messages to pages
+  after a redirect."
+  [v]
+  (put! :_flash v))
+
+(defn flash-get
+  "Retrieve the flash stored value. This will remove the flash from the
+  session."
+  []
+  (let [flash (get :_flash)]
+    (remove! :_flash)
+    flash))
+
+(defn noir-session [handler]
+  (fn [request]
+    (binding [*noir-session* (atom (:session request))]
+      (when-let [resp (handler request)]
+        (assoc resp :session @*noir-session*)))))
 
 (defn wrap-noir-session [handler]
   (-> handler
