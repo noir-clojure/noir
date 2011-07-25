@@ -3,3 +3,6 @@ pom.xml
 /lib/
 /classes/
 .lein-deps-sum
+.lein-failures
+autodoc/
+docs/
