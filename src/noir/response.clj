@@ -9,6 +9,12 @@
   {:header {"Content-Type" "text/xml"}
    :body content})
 
+(defn content-type
+  "Wraps the response with the given content type and sets the body to the content."
+  [ctype content]
+  {:header {"Content-Type" ctype}
+   :body content})
+
 (defn json 
   "Wraps the response in the json content type and stringifies the given content"
   [content]

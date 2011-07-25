@@ -35,6 +35,12 @@
              (has-content-type (content-types :json))
              (has-body "{\"noir\":\"web\"}"))))
 
+(deftest flash-lifetime
+         (with-noir
+           (session/flash-put! "noir")
+           (is (= "noir" (session/flash-get)))
+           (is (= nil (session/flash-get)))))
+
 (defpage "/test" {:keys [nme]}
          (str "Hello " nme))
 
@@ -52,8 +58,12 @@
            (has-content-type (content-types :json))
            (has-body "{\"json\":\"text\"}")))
 
+(defpage "/utf" []
+         "ąčęė")
+
 (deftest wrap-utf
          (server/add-middleware middleware/wrap-utf-8)
-         (-> (send-request "/test" {"nme" "chris"})
-           (has-content-type "text/html; charset=utf-8")))
+         (-> (send-request "/utf")
+           (has-content-type "text/html; charset=utf-8")
+           (has-body "ąčęė")))
 

@@ -52,7 +52,6 @@
       (cookie/wrap-noir-cookies)
       (validation/wrap-noir-validation)
       (statuses/wrap-status-pages)
-      (wrap-file-info)
       (wrap-route-updating)
       (exception/wrap-exceptions)
       (options/wrap-options opts))))
