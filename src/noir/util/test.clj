@@ -1,4 +1,5 @@
 (ns noir.util.test
+  "A set of utilities for testing a Noir project"
   (:use clojure.test)
   (:require [noir.server :as server]
             [noir.session :as session]
@@ -8,32 +9,43 @@
 (def content-types {:json "application/json"
                     :html "text/html"})
 
-(defmacro with-noir [& body]
+(defmacro with-noir 
+  "Executes the body within the context of Noir's bindings"
+  [& body]
   `(binding [options/*options* options/default-opts
              session/*noir-session* (atom {})
              cookies/*new-cookies* (atom {})
              cookies/*cur-cookies* (atom {})]
      ~@body))
 
-(defn has-content-type [resp ct]
+(defn has-content-type 
+  "Asserts that the response has the given content type"
+  [resp ct]
   (is (= ct (get-in resp [:headers "Content-Type"])))
   resp)
     
-(defn has-status [resp stat]
+(defn has-status 
+  "Asserts that the response has the given status"
+  [resp stat]
   (is (= stat (get resp :status)))
   resp)
 
-(defn has-body [resp cont]
+(defn has-body 
+  "Asserts that the response has the given body"
+  [resp cont]
   (is (= cont (get resp :body)))
   resp)
 
-(defn make-request [route & [params]]
+(defn- make-request [route & [params]]
   (let [[method uri] (if (vector? route)
                        route
                        [:get route])]
     {:uri uri :request-method method :params params}))
 
-(defn send-request [route & [params]]
+(defn send-request 
+  "Send a request to the Noir handler. Unlike with-noir, this will run
+  the request within the context of all middleware."
+  [route & [params]]
   (let [handler (server/gen-handler)]
     (handler (make-request route params))))
     
