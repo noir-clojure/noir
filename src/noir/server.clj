@@ -71,6 +71,15 @@
     (doseq [n nss]
       (require n))))
 
+(defn load-views-ns
+  "Require all the namespaces prefixed by the namespace symbold given so that the pages 
+  are loaded by the server."
+  [ns-sym]
+  (let [nss (find-namespaces-on-classpath)
+        nss (filter #(re-seq (re-pattern (name ns-sym)) %) nss)]
+    (doseq [n nss]
+      (require n))))
+
 (defn add-middleware 
   "Add a middleware function to the noir server. Func is a standard ring middleware
   function, which will be passed the handler. Any extra args to be applied should be
