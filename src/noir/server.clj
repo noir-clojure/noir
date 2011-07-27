@@ -76,7 +76,7 @@
   are loaded by the server."
   [ns-sym]
   (let [nss (find-namespaces-on-classpath)
-        nss (filter #(re-seq (re-pattern (name ns-sym)) %) nss)]
+        nss (filter #(re-seq (re-pattern (name ns-sym)) (name %)) nss)]
     (doseq [n nss]
       (require n))))
 
