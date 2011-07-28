@@ -66,19 +66,20 @@
 (defn load-views 
   "Require all the namespaces in the given dir so that the pages are loaded
   by the server."
-  [dir]
-  (let [nss (find-namespaces-in-dir (file dir))]
-    (doseq [n nss]
-      (require n))))
+  [& dirs]
+  (doseq [dir dirs]
+    (let [nss (find-namespaces-in-dir (file dir))]
+      (doseq [n nss]
+        (require n)))))
 
 (defn load-views-ns
   "Require all the namespaces prefixed by the namespace symbold given so that the pages 
   are loaded by the server."
-  [ns-sym]
-  (let [nss (find-namespaces-on-classpath)
-        nss (filter #(re-seq (re-pattern (name ns-sym)) (name %)) nss)]
-    (doseq [n nss]
-      (require n))))
+  [& ns-syms]
+  (let [nss (find-namespaces-on-classpath)]
+   (doseq [ns-sym ns-syms]
+     (doseq [n (filter #(re-seq (re-pattern (name ns-sym)) (name %)) nss)]
+       (require n)))))
 
 (defn add-middleware 
   "Add a middleware function to the noir server. Func is a standard ring middleware
