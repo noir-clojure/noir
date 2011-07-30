@@ -65,7 +65,7 @@
   /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting 
   a section based on privileges:
 
-  (pre-route '/admin/*' (when-not (is-admin?) (redirect '/login')))"
+  (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [route destruct & body]
   (let [{action# :action url# :url} (parse-route route)]
     `(swap! *pre-routes* assoc ~url# (~action# ~url# {:as request#} ((fn [~destruct] ~@body) request#)))))
