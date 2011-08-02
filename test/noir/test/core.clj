@@ -8,7 +8,8 @@
             [noir.session :as session]
             [noir.options :as options]
             [noir.response :as resp]
-            [noir.cookies :as cookies]))
+            [noir.cookies :as cookies]
+            [noir.validation :as vali]))
 
 (deftest hashing
          (let [pass (crypt/encrypt "password")]
@@ -67,3 +68,25 @@
            (has-content-type "text/html; charset=utf-8")
            (has-body "ąčęė")))
 
+(deftest valid-emails
+  (are [email] (vali/is-email? email)
+       "testword@domain.com"
+       "test+word@domain.com"
+       "test_word@domain.com"
+       "test'word@domain.com"
+       "test`word@domain.com"
+       "test#word@domain.com"
+       "test=word@domain.com"
+       "test|word@domain.com"
+       "testword@test.domain.com"
+       "te$t@test.com"
+       "t`e's.t&w%o#r{d@t.e.s.t"
+       "x@x.xx"))
+
+(deftest invalid-emails
+  (are [email] (not (vali/is-email? email))
+       ".test@domain.com"
+       "-@-.com"
+       "test"
+       "test.@domain.com"
+       "test@com"))
