@@ -6,8 +6,5 @@
   to display all utf-8 characters."
   [handler]
   (fn [request]
-    (let [resp (handler request)
-          ct (get-in resp [:headers "Content-Type"])
-          neue-ct (str ct "; charset=utf-8")]
-      (assoc-in resp [:headers "Content-Type"] neue-ct))))
-
+    (let [resp (handler request)]
+      (update-in resp [:headers "Content-Type"] str "; charset=utf-8"))))
