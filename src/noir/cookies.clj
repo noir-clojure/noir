@@ -1,8 +1,7 @@
 (ns noir.cookies
   "Stateful access to cookie values"
   (:refer-clojure :exclude [get remove])
-  (:require [clojure.contrib.logging :as lg]
-            [noir.util.crypt :as crypt])
+  (:require [noir.util.crypt :as crypt])
   (:use ring.middleware.cookies))
 
 (def *cur-cookies* nil)
