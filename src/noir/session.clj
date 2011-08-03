@@ -1,6 +1,7 @@
 (ns noir.session
-  "Stateful session handling functions. Uses a memory-store by default, but can use a custom store 
-  by supplying a :session-store option to server/start."
+  "Stateful session handling functions. Uses a memory-store by
+  default, but can use a custom store by supplying a :session-store
+  option to server/start. All keys are stored as strings."
   (:refer-clojure :exclude [get remove])
   (:use ring.middleware.session
         ring.middleware.session.memory)
@@ -12,13 +13,13 @@
 (defn put! 
   "Associates the key with the given value in the session"
   [k v]
-  (swap! *noir-session* assoc k v))
+  (swap! *noir-session* assoc (name k) v))
 
 (defn get 
   "Get the key's value from the session, returns nil if it doesn't exist."
   ([k] (get k nil))
   ([k default]
-    (clojure.core/get @*noir-session* k default)))
+    (clojure.core/get @*noir-session* (name k) default)))
 
 (defn clear! 
   "Remove all data from the session and start over cleanly."
@@ -28,7 +29,7 @@
 (defn remove!
   "Remove a key from the session"
   [k]
-  (swap! *noir-session* dissoc k))
+  (swap! *noir-session* dissoc (name k)))
 
 (defn flash-put!
   "Store a value with a lifetime of one retrieval (on the first flash-get,
