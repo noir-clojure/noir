@@ -24,25 +24,21 @@
            (is (nil? (cookies/get :noir)))
            (is (= "noir" (cookies/get :noir "noir")))))
 
-(defpage "/cookie-set" {:keys [name value]}
-  (cookies/put-signed! name :noir value)
-  (str "Hello " nme))
-
 (deftest cookies-get-signed
          (with-noir
            (is (nil? (cookies/get :noir)))
-           (println (str @cookies/*new-cookies*))
-           ;; Swap cookies.
-           (swap! cookies/*cur-cookies* merge @cookies/*new-cookies*)
-           ;; Check default behavior for bad keys.
-           (is (nil? (cookies/get-signed "b4d-k3y" :noir)))
-           (is (= "noir" (cookies/get-signed "b4d-k3y" :noir "noir")))
-           ;; Check retrieval of good value.
-           (is (= "stored-value" (cookies/get-signed "s3cr3t-k3y" :noir)))
+           (cookies/put-signed! "s3cr3t-k3y" :noir "stored-value")
+           ;; Use new cookies as cur.
+           (binding [cookies/*cur-cookies* @cookies/*new-cookies*]
+             ;; Check default behavior for bad keys.
+             (is (nil? (cookies/get-signed "b4d-k3y" :noir)))
+             (is (= "noir" (cookies/get-signed "b4d-k3y" :noir "noir")))
+             ;; Check retrieval of good value.
+             (is (= "stored-value" (cookies/get-signed "s3cr3t-k3y" :noir))))
            ;; Modify value,
-           (assoc cookies/*cur-cookies* :noir "changed-value")
-           ;; Check that it's not returned.
-           (is (= "noir" (cookies/get-signed "b4d-k3y" :noir "noir")))))
+           (binding [cookies/*cur-cookies* (assoc @cookies/*new-cookies* "noir" "changed-value")]
+             ;; Check that it's not returned.
+             (is (nil? (cookies/get-signed "s3cr3t-k3y" :noir))))))
 
 (deftest options-get-default
          (with-noir

@@ -39,8 +39,12 @@
   should be a secret that's ideally site-wide, ideally user or session wide."
   [sign-key k v]
   (let [actual-v (if (map? v) (:value v) v)]
-    (put! k v) ;;!! DONT CHECK IN.
-    (put! (signed-name k) (crypt/sha1-sign-hex sign-key v))))
+    (put! k v) 
+    (put! (signed-name k)
+          (let [signed-v (crypt/sha1-sign-hex sign-key actual-v)]
+            (if (map? v) ;; If previous value was a map with other attributes, 
+              (assoc v :value signed-v) ;; Place the signed value in a similar map,
+              signed-v))))) ;; Otherwise just signed value.
 
 (defn get-signed
   "Get the value of a cookie from the request using 'get'. Verifies that a signing
@@ -49,10 +53,9 @@
   ([sign-key k default]
      (let [v (get k)
            stored-sig (get (signed-name k)) ]
-       (println (str v " " (signed-name k) " >" stored-sig))
-       (if (or (lg/spy (nil? stored-sig)) ;; If signature not available,
+       (if (or (nil? stored-sig) ;; If signature not available,
                (nil? v) ;; or value is not found,
-               (lg/spy (not= (crypt/sha1-sign-hex sign-key v) stored-sig))) ;; or sig mismatch,
+               (not= (crypt/sha1-sign-hex sign-key v) stored-sig)) ;; or sig mismatch,
          default ;; return default.
          v)))) ;; otherwise return the value.
 
