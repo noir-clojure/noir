@@ -19,3 +19,11 @@
   "Compare a raw string with an already encrypted string"
   [raw encrypted]
   (BCrypt/checkpw raw encrypted))
+
+(defn sha1-sign-hex [sign-key v]
+  "Using a signing key, compute the sha1 hmac of v and convert to hex."
+  (let [mac (javax.crypto.Mac/getInstance "HmacSHA1")
+        secret (javax.crypto.spec.SecretKeySpec. (.getBytes sign-key), "HmacSHA1")]
+    (.init mac secret)
+    (apply str (map (partial format "%02x") (.doFinal mac (.getBytes v))))))
+
