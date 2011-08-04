@@ -52,7 +52,14 @@
       (when-let [resp (handler request)]
         (assoc resp :session @*noir-session*)))))
 
+(defn assoc-if [m k v]
+  (if (not (nil? v))
+    (assoc m k v)
+    m))
+
 (defn wrap-noir-session [handler]
   (-> handler
     (noir-session)
-    (wrap-session {:store (options/get :session-store (memory-store mem))})))
+    (wrap-session
+     (assoc-if {:store (options/get :session-store (memory-store mem))}
+               :cookie-attrs (options/get :session-cookie-attrs)))))
