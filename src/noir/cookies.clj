@@ -35,7 +35,7 @@
 (defn put-signed!
   "Adds a new cookie whose name is k and has the value v. In addition,
   adds another cookie that checks the authenticity of 'v'. Sign-key
-  should be a secret that's ideally site-wide, ideally user or session wide."
+  should be a secret that's user-wide, session-wide or site wide (worst)."
   [sign-key k v]
   (let [actual-v (if (map? v) (:value v) v)]
     (put! k v) 
