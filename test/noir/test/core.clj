@@ -24,6 +24,22 @@
            (is (nil? (cookies/get :noir)))
            (is (= "noir" (cookies/get :noir "noir")))))
 
+(deftest cookies-get-signed
+         (with-noir
+           (is (nil? (cookies/get :noir)))
+           (cookies/put-signed! "s3cr3t-k3y" :noir "stored-value")
+           ;; Use new cookies as cur.
+           (binding [cookies/*cur-cookies* @cookies/*new-cookies*]
+             ;; Check default behavior for bad keys.
+             (is (nil? (cookies/get-signed "b4d-k3y" :noir)))
+             (is (= "noir" (cookies/get-signed "b4d-k3y" :noir "noir")))
+             ;; Check retrieval of good value.
+             (is (= "stored-value" (cookies/get-signed "s3cr3t-k3y" :noir))))
+           ;; Modify value,
+           (binding [cookies/*cur-cookies* (assoc @cookies/*new-cookies* "noir" "changed-value")]
+             ;; Check that it's not returned.
+             (is (nil? (cookies/get-signed "s3cr3t-k3y" :noir))))))
+
 (deftest options-get-default
          (with-noir
            (is (nil? (options/get :noir)))
