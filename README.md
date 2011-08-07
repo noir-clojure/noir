@@ -2,7 +2,7 @@
 
 A framework for writing clojure websites. Noir is currently being used in production at http://www.typewire.io
 
-Learn more at [Web Noir](http://www.webnoir.org)
+Learn more at [Web Noir](http://www.webnoir.org) and see [Pinot](https://github.com/ibdknox/pinot) for its ClojureScript counterpart.
 
 ## Usage
 
@@ -19,6 +19,8 @@ If you want to include Noir in an already created leiningen project, simply add 
 ```clojure
 [noir "1.1.0"]
 ```
+
+You can also use [noir-cljs](https://github.com/ibdknox/noir-cljs) to add ClojureScript compilation to Noir via middleware.
 
 ## Docs
 * [Web Noir](http://www.webnoir.org)
