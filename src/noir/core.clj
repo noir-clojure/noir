@@ -5,10 +5,10 @@
   (:require [clojure.string :as string]
             [compojure.route :as c-route]))
 
-(defonce *noir-routes* (atom {}))
-(defonce *route-funcs* (atom {}))
-(defonce *pre-routes* (atom (sorted-map)))
-(defonce *spec-routes* [(c-route/resources "/")
+(defonce noir-routes (atom {}))
+(defonce route-funcs (atom {}))
+(defonce pre-routes (atom (sorted-map)))
+(defonce spec-routes [(c-route/resources "/")
                         (ANY "*" [] {:status 404 :body nil})])
 
 (defn- keyword->symbol [namesp kw]
@@ -39,8 +39,8 @@
     `(do
        (defn ~fn-name# [~destruct]
          ~@body)
-       (swap! *route-funcs* assoc ~(keyword fn-name#) ~fn-name#)
-       (swap! *noir-routes* assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
+       (swap! route-funcs assoc ~(keyword fn-name#) ~fn-name#)
+       (swap! noir-routes assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
 
 (defmacro defpartial 
   "Create a function that returns html using hiccup. The function is callable with the given name."
@@ -55,7 +55,7 @@
   e.g. [:post '/vals']"
   [route & [params]]
   (let [{fn-name :route-fn} (parse-route route)
-        func (get @*route-funcs* (keyword fn-name))]
+        func (get @route-funcs (keyword fn-name))]
     (func params)))
 
 (defmacro pre-route 
@@ -68,4 +68,4 @@
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [route destruct & body]
   (let [{action# :action url# :url} (parse-route route)]
-    `(swap! *pre-routes* assoc ~url# (~action# ~url# {:as request#} ((fn [~destruct] ~@body) request#)))))
+    `(swap! pre-routes assoc ~url# (~action# ~url# {:as request#} ((fn [~destruct] ~@body) request#)))))

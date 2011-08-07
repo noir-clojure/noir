@@ -18,7 +18,7 @@
             [noir.session :as session]
             [noir.validation :as validation]))
 
-(defonce *middleware* (atom #{}))
+(defonce middleware (atom #{}))
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
@@ -27,7 +27,7 @@
 
 (defn- wrap-custom-middleware [handler]
   (loop [cur handler
-         mware (seq @*middleware*)]
+         mware (seq @middleware)]
     (if-not mware
       cur
       (let [[func args] (first mware)
@@ -35,7 +35,7 @@
         (recur neue (next mware))))))
 
 (defn- pack-routes []
-  (apply routes (concat (vals @noir/*pre-routes*) (vals @noir/*noir-routes*) noir/*spec-routes*)))
+  (apply routes (concat (vals @noir/pre-routes) (vals @noir/noir-routes) noir/spec-routes)))
 
 (defn- init-routes [opts]
   (binding [options/*options* (options/compile-options opts)]
@@ -85,7 +85,7 @@
   function, which will be passed the handler. Any extra args to be applied should be
   supplied along with the function."
   [func & args]
-  (swap! *middleware* conj [func args]))
+  (swap! middleware conj [func args]))
 
 (defn start 
   "Create a noir server bound to the specified port with a map of options and return it. 
