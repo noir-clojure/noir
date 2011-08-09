@@ -23,7 +23,7 @@
   [resp ct]
   (is (= ct (get-in resp [:headers "Content-Type"])))
   resp)
-    
+
 (defn has-status 
   "Asserts that the response has the given status"
   [resp stat]
@@ -48,9 +48,3 @@
   [route & [params]]
   (let [handler (server/gen-handler)]
     (handler (make-request route params))))
-    
-
-
-
-
-
