@@ -3,7 +3,6 @@
   (:use hiccup.core
         compojure.core)
   (:use [clojure.contrib.except :only (throwf)])
-  (:require [clojure.string :as str])
   (:require [clojure.string :as string]
             [compojure.route :as c-route]))
 
@@ -106,7 +105,7 @@
       (throwf "missing route-arg for %s" (first (filter #(not (contains? route-args %)) route-arg-names))))
     (reduce (fn [path [k v]]
               (assert (keyword? k))
-              (str/replace path (str k) (str v))) url route-args)))
+              (string/replace path (str k) (str v))) url route-args)))
 
 (defmacro url-for
   "given a named route, i.e. (url-for foo), where foo is a named
