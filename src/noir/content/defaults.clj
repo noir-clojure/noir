@@ -45,8 +45,10 @@
                 [:table [:tbody (map exception-item (:trace-elems exception))]]
                 (for [cause causes :while cause]
                   [:div.cause
-                   [:h3 "Caused by: " (:class cause) " - " (:message cause)]
-                   [:table (map exception-item (:trimmed-elems cause))]])]
+                   (try
+                     [:h3 "Caused by: " (:class cause) " - " (:message cause)]
+                     [:table (map exception-item (:trimmed-elems cause))]
+                     (catch Throwable e))])]
               ))
 
 (defpartial internal-error []

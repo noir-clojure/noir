@@ -60,7 +60,10 @@
       (catch Exception e
         (.printStackTrace e)
         (let [content (if (options/dev-mode?)
-                        (defaults/stack-trace (parse-ex e))
+                        (try 
+                          (defaults/stack-trace (parse-ex e))
+                          (catch Throwable e
+                            (statuses/get-page 500)))
                         (statuses/get-page 500))]
           {:status 500
            :headers {"Content-Type" "text/html"}

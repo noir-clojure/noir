@@ -7,7 +7,7 @@
                            [ring "0.3.11"]
                            [cssgen "0.2.4"]
                            [hiccup "0.3.6"]
-                           [clj-stacktrace "0.2.2"]
+                           [clj-stacktrace "0.2.3"]
                            [ring-reload-modified "0.1.0"]
                            [net.java.dev.jets3t/jets3t "0.8.0"]
                            [org.mindrot/jbcrypt "0.3m"]]
