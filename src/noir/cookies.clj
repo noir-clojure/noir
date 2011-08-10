@@ -4,8 +4,8 @@
   (:require [noir.util.crypt :as crypt])
   (:use ring.middleware.cookies))
 
-(def *cur-cookies* nil)
-(def *new-cookies* nil)
+(declare ^:dynamic *cur-cookies*)
+(declare ^:dynamic *new-cookies*)
 
 (defn put! 
   "Add a new cookie whose name is k and has the value v. If v is a string

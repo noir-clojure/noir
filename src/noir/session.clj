@@ -7,7 +7,7 @@
         ring.middleware.session.memory)
   (:require [noir.options :as options]))
 
-(declare *noir-session*)
+(declare ^:dynamic *noir-session*)
 (defonce mem (atom {}))
 
 (defn put! 
