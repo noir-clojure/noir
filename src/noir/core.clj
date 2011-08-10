@@ -2,7 +2,6 @@
   "Functions to work with partials and pages."
   (:use hiccup.core
         compojure.core)
-  (:use [clojure.contrib.except :only (throwf)])
   (:require [clojure.string :as string]
             [compojure.route :as c-route]))
 
@@ -29,6 +28,9 @@
 ;; (defpage foo [:post "/foo/:id"])
 
 ;; this would be a good candidate for match, once it's ready (https://github.com/swannodette/match)
+
+(defn- throwf [msg & args]
+  (throw (Exception. (apply format msg args))))
 
 (defn parse-args
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
