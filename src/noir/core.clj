@@ -117,8 +117,12 @@
 
   (url-for foo :id 3) => \"/foo/3\" "
   ([route-fn & {:as arg-map}]
-    (let [curr-ns *ns*]
-      `(url-for* (ns-resolve ~curr-ns (quote ~route-fn)) ~arg-map)))) ;; use ns-resolve to resolve at runtime (rather than compile time), to avoid circular dependencies between views.
+     (let [curr-ns *ns*]
+       `(do
+          (let [route-fn# (ns-resolve ~curr-ns (quote ~route-fn))]
+            (when-not route-fn#
+              ((var throwf) "could not find route fn:" ~route-fn))
+            (url-for* route-fn# ~arg-map)))))) ;; use ns-resolve to resolve at runtime (rather than compile time), to avoid circular dependencies between views.
 
 (defn render 
   "Renders the content for a route by calling the page like a function
