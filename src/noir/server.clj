@@ -26,13 +26,9 @@
     handler))
 
 (defn- wrap-custom-middleware [handler]
-  (loop [cur handler
-         mware (seq @middleware)]
-    (if-not mware
-      cur
-      (let [[func args] (first mware)
-            neue (apply func cur args)]
-        (recur neue (next mware))))))
+  (reduce (fn [cur [func args]] (apply func cur args))
+          handler
+          (seq @middleware)))
 
 (defn- pack-routes []
   (apply routes (concat (vals @noir/pre-routes) (vals @noir/noir-routes) noir/spec-routes)))
