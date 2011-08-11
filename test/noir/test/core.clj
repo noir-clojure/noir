@@ -74,11 +74,25 @@
            (has-content-type "application/json")
            (has-body "{\"json\":\"text\"}")))
 
+(defpage "/" [])
+
 (defpage "/utf" []
          "ąčęė")
 
 (defpage foo "/foo" []
   "named-route")
+
+(pre-route "/pre" []
+           (resp/status 403
+                        "not allowed"))
+
+(defpage "/pre" []
+         "you should never see this")
+
+(deftest pre-route-test
+         (-> (send-request "/pre")
+           (has-status 403)
+           (has-body "not allowed")))
 
 (deftest named-route-test
   (-> (send-request "/foo")

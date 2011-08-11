@@ -133,6 +133,6 @@
   a section based on privileges:
 
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
-  [route destruct & body]
-  (let [{action# :action url# :url} (parse-args route)]
-    `(swap! pre-routes assoc ~url# (~action# ~url# {:as request#} ((fn [~destruct] ~@body) request#)))))
+  [& args]
+  (let [{:keys [action destruct url body]} (parse-args args)]
+    `(swap! pre-routes assoc ~url (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
