@@ -22,23 +22,63 @@
                   (string/replace #":" ">")
                   (string/replace #"\*" "<")))))
 
-(defn- parse-route [rte]
-  (let [[action url] (if (vector? rte)
-                         [(keyword->symbol "compojure.core" (first rte)) (second rte)]
-                         ['compojure.core/GET rte])
-        func (symbol (route->key action url))]
-    {:action action :url url :route-fn func}))
+;; (defpage "/foo/:id" {})
+;; (defpage [:get "/foo/:id"] {})
+;; (defpage foo "/foo/:id" {})
+;; (defpage foo [:post "/foo/:id"])
+
+;; this would be a good candidate for match, once it's ready (https://github.com/swannodette/match)
+
+(defn- throwf [msg & args]
+  (throw (Exception. (apply format msg args))))
+
+(defn parse-args
+  "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
+  [args]
+  (let [m (if (symbol? (first args))
+            {:fn-name (first args)}
+            {})
+        args (if (symbol? (first args))
+               (rest args)
+               args)
+        m (merge m (if (vector? (first args))
+                     (let [[action url] (first args)]
+                       {:action (keyword->symbol "compojure.core" action)
+                        :url url})
+                     {:action 'compojure.core/GET
+                      :url (first args)}))
+        m (if (:fn-name m)
+            m
+            (assoc m :fn-name (symbol (route->key (-> m :action) (-> m :url)))))
+        args (rest args)
+        destruct (first args)
+        m (assoc m :destruct destruct)
+        args (rest args)
+        body args
+        m (assoc m :body body)]
+    m))
 
 (defmacro defpage 
   "Adds a route to the server whose content is the the result of evaluating the body.
   The function created is passed the params of the request and the destruct param allows
-  you to destructure that meaningfully for use in the body. Routes can either be a string
-  or a vector of [method route], such as [:post '/vals']. The default method is GET."
-  [route destruct & body]
-  (let [{action# :action url# :url fn-name# :route-fn} (parse-route route)]
+  you to destructure that meaningfully for use in the body.
+
+  There are several supported forms:
+
+  (defpage \"/foo/:id\" {id :id})  an unnamed route
+  (defpage [:post \"/foo/:id\"] {id :id}) a route that responds to POST
+  (defpage foo \"/foo:id\" {id :id}) a named route
+  (defpage foo [:post \"/foo/:id\"] {id :id})
+
+  The default method is GET."
+
+  [& args]
+  (let [{fn-name# :fn-name action# :action url# :url destruct# :destruct body# :body} (parse-args args)]
     `(do
-       (defn ~fn-name# [~destruct]
-         ~@body)
+       (defn ~fn-name# {::url ~url#
+                        ::action (quote ~action#)
+                        ::args (quote ~destruct#)} [~destruct#]
+         ~@body#)
        (swap! route-funcs assoc ~(keyword fn-name#) ~fn-name#)
        (swap! noir-routes assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
 
@@ -49,12 +89,46 @@
      (html
        ~@body)))
 
+(defn route-arguments
+  "returns the list of route arguments in a route"
+  [route]
+  (->> route
+       (re-seq #"/:([^\/]+)")
+       (map second)
+       (map keyword)))
+
+(defn url-for* [route-fn route-args]
+  (let [route-meta (-> route-fn meta)
+        url (-> route-meta ::url)
+        route-arg-names (route-arguments url)]
+    (when (not url)
+      (throwf "no url metadata on %s" route-fn))
+    (when (not (every? #(contains? route-args %) route-arg-names))
+      (throwf "missing route-arg for %s" (first (filter #(not (contains? route-args %)) route-arg-names))))
+    (reduce (fn [path [k v]]
+              (assert (keyword? k))
+              (string/replace path (str k) (str v))) url route-args)))
+
+(defmacro url-for
+  "given a named route, i.e. (url-for foo), where foo is a named
+  route, i.e.  (defpage foo \"/foo/:id\"), returns the url for the
+  route. If the route takes arguments, the second argument must be a
+  map of route arguments to values
+
+  (url-for foo :id 3) => \"/foo/3\" "
+  ([route-fn & {:as arg-map}]
+     (let [curr-ns *ns*]
+       `(do
+          (let [route-fn# (ns-resolve ~curr-ns (quote ~route-fn))]
+            (when-not route-fn#
+              ((var throwf) "could not find route fn:" ~route-fn))
+            (url-for* route-fn# ~arg-map)))))) ;; use ns-resolve to resolve at runtime (rather than compile time), to avoid circular dependencies between views.
+
 (defn render 
   "Renders the content for a route by calling the page like a function
-  with the given param map. Just like with defpage, route can be a vector,
-  e.g. [:post '/vals']"
+  with the given param map. Accepts either '/vals' or [:post '/vals']"
   [route & [params]]
-  (let [{fn-name :route-fn} (parse-route route)
+  (let [{fn-name :route-fn} (parse-args route)
         func (get @route-funcs (keyword fn-name))]
     (func params)))
 
@@ -67,5 +141,5 @@
 
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [route destruct & body]
-  (let [{action# :action url# :url} (parse-route route)]
+  (let [{action# :action url# :url} (parse-args route)]
     `(swap! pre-routes assoc ~url# (~action# ~url# {:as request#} ((fn [~destruct] ~@body) request#)))))
