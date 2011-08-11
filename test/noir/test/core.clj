@@ -78,9 +78,11 @@
          "ąčęė")
 
 (deftest wrap-utf
+         ;;Technically this middleware is unnecessary now due to some changes in ring.
+         ;;but this provides a nice test for custom middleware.
          (server/add-middleware middleware/wrap-utf-8)
          (-> (send-request "/utf")
-           (has-content-type "text/html; charset=utf-8")
+           (has-content-type "text/html; charset=utf-8; charset=utf-8")
            (has-body "ąčęė")))
 
 (deftest valid-emails
