@@ -74,6 +74,41 @@
            (has-content-type "application/json")
            (has-body "{\"json\":\"text\"}")))
 
+(deftest parsing-defpage
+         (is (= (parse-args '[foo "/" [] "hey"]) 
+               {:fn-name 'foo
+                :url "/"
+                :action 'compojure.core/GET
+                :destruct []
+                :body '("hey")}))
+         (is (= (parse-args '["/" [] "hey"]) 
+               {:fn-name 'GET--
+                :url "/"
+                :action 'compojure.core/GET
+                :destruct []
+                :body '("hey")}))
+         (is (= (parse-args '[foo [:post "/"] [] "hey"]) 
+               {:fn-name 'foo
+                :url "/"
+                :action 'compojure.core/POST
+                :destruct []
+                :body '("hey")}))
+         (is (= (parse-args '[[:post "/"] [] "hey" "blah"]) 
+               {:fn-name 'POST--
+                :url "/"
+                :action 'compojure.core/POST
+                :destruct []
+                :body '("hey" "blah")}))
+         (is (= (parse-args '["/test" {} "hey"]) 
+               {:fn-name 'GET--test
+                :url "/test"
+                :action 'compojure.core/GET
+                :destruct {}
+                :body '("hey")}))
+         (is (thrown? Exception (parse-args '["/" 3 3])))
+         (is (thrown? Exception (parse-args '["/" '() 3])))
+         (is (thrown? Exception (parse-args '[{} '() 3]))))
+
 (defpage "/" [])
 
 (defpage "/utf" []

@@ -25,31 +25,40 @@
 (defn- throwf [msg & args]
   (throw (Exception. (apply format msg args))))
 
-(defn- parse-args
+(defn- parse-fn-name [[cur :as all]]
+  (let [[fn-name remaining] (if (symbol? cur)
+                              [cur (rest all)]
+                              [nil all])]
+        [{:fn-name fn-name} remaining]))
+
+(defn- parse-route [[{:keys [fn-name] :as result} [cur :as all]]]
+  (when-not (or (vector? cur) (string? cur))
+    (throwf "Routes must either be a string or vector, not a %s" (type cur)))
+  (let [[action url] (if (vector? cur)
+                       [(keyword->symbol "compojure.core" (first cur)) (second cur)]
+                       ['compojure.core/GET cur])
+        final (-> result
+                (assoc :fn-name (if fn-name
+                                  fn-name
+                                  (symbol (route->key action url))))
+                (assoc :url url)
+                (assoc :action action))]
+    [final (rest all)]))
+
+(defn- parse-destruct-body [[result [cur :as all]]]
+  (when-not (some true? (map #(% cur) [vector? map? symbol?]))
+    (throwf "Invalid destructuring param: %s" cur))
+  (-> result
+    (assoc :destruct cur)
+    (assoc :body (rest all))))
+
+(defn parse-args
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
   [args]
-  (let [m (if (symbol? (first args))
-            {:fn-name (first args)}
-            {})
-        args (if (symbol? (first args))
-               (rest args)
-               args)
-        m (merge m (if (vector? (first args))
-                     (let [[action url] (first args)]
-                       {:action (keyword->symbol "compojure.core" action)
-                        :url url})
-                     {:action 'compojure.core/GET
-                      :url (first args)}))
-        m (if (:fn-name m)
-            m
-            (assoc m :fn-name (symbol (route->key (-> m :action) (-> m :url)))))
-        args (rest args)
-        destruct (first args)
-        m (assoc m :destruct destruct)
-        args (rest args)
-        body args
-        m (assoc m :body body)]
-    m))
+  (-> args
+    (parse-fn-name)
+    (parse-route)
+    (parse-destruct-body)))
 
 (defmacro defpage 
   "Adds a route to the server whose content is the the result of evaluating the body.
