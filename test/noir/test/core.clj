@@ -60,6 +60,7 @@
 (defpage "/test" {:keys [nme]}
          (str "Hello " nme))
 
+
 (deftest route-test
          (-> (send-request "/test" {"nme" "chris"})
            (has-status 200)
@@ -139,6 +140,11 @@
 
 (defpage [:post "/post-route"] {:keys [nme]}
   (str "Post " nme))
+
+(deftest render-test
+         (is (= "named-route" (render foo)))
+         (is (= "Hello chris" (render "/test" {:nme "chris"})))
+         (is (= "Post chris") (render [:post "/post-route"] {:nme "chris"})))
 
 (deftest route-post-test
   (-> (send-request [:post "/post-route"] {"nme" "chris"})

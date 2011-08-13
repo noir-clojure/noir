@@ -60,7 +60,7 @@
     (parse-route)
     (parse-destruct-body)))
 
-(defmacro defpage 
+(defmacro defpage
   "Adds a route to the server whose content is the the result of evaluating the body.
   The function created is passed the params of the request and the destruct param allows
   you to destructure that meaningfully for use in the body.
@@ -84,7 +84,7 @@
        (swap! route-funcs assoc ~(keyword fn-name#) ~fn-name#)
        (swap! noir-routes assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
 
-(defmacro defpartial 
+(defmacro defpartial
   "Create a function that returns html using hiccup. The function is callable with the given name."
   [fname params & body]
   `(defn ~fname ~params
@@ -126,19 +126,21 @@
               ((var throwf) "could not find route fn:" ~route-fn))
             (url-for* route-fn# ~arg-map)))))) ;; use ns-resolve to resolve at runtime (rather than compile time), to avoid circular dependencies between views.
 
-(defn render 
+(defn render
   "Renders the content for a route by calling the page like a function
   with the given param map. Accepts either '/vals' or [:post '/vals']"
   [route & [params]]
-  (let [{fn-name :route-fn} (parse-args route)
-        func (get @route-funcs (keyword fn-name))]
-    (func params)))
+  (if (fn? route)
+    (route params)
+    (let [[{fn-name :fn-name :as res}] (parse-route [{} [route]])
+          func (get @route-funcs (keyword fn-name))]
+      (func params))))
 
-(defmacro pre-route 
+(defmacro pre-route
   "Adds a route to the beginning of the route table and passes the entire request
   to be destructured and used in the body. These routes are the only ones to make
-  an ordering gaurantee. They will always be in order of ascending specificity (e.g. /* , 
-  /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting 
+  an ordering gaurantee. They will always be in order of ascending specificity (e.g. /* ,
+  /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting
   a section based on privileges:
 
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
