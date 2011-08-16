@@ -1,5 +1,6 @@
 (ns noir.test.core
   (:use [noir.core]
+	[compojure.core]
         [noir.util.test])
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
@@ -13,7 +14,7 @@
 
 (deftest hashing
          (let [pass (crypt/encrypt "password")]
-           (is (crypt/compare "password" pass)))) 
+           (is (crypt/compare "password" pass))))
 
 (deftest session-get-default
          (with-noir
@@ -60,7 +61,6 @@
 (defpage "/test" {:keys [nme]}
          (str "Hello " nme))
 
-
 (deftest route-test
          (-> (send-request "/test" {"nme" "chris"})
            (has-status 200)
@@ -76,31 +76,31 @@
            (has-body "{\"json\":\"text\"}")))
 
 (deftest parsing-defpage
-         (is (= (parse-args '[foo "/" [] "hey"]) 
+         (is (= (parse-args '[foo "/" [] "hey"])
                {:fn-name 'foo
                 :url "/"
                 :action 'compojure.core/GET
                 :destruct []
                 :body '("hey")}))
-         (is (= (parse-args '["/" [] "hey"]) 
+         (is (= (parse-args '["/" [] "hey"])
                {:fn-name 'GET--
                 :url "/"
                 :action 'compojure.core/GET
                 :destruct []
                 :body '("hey")}))
-         (is (= (parse-args '[foo [:post "/"] [] "hey"]) 
+         (is (= (parse-args '[foo [:post "/"] [] "hey"])
                {:fn-name 'foo
                 :url "/"
                 :action 'compojure.core/POST
                 :destruct []
                 :body '("hey")}))
-         (is (= (parse-args '[[:post "/"] [] "hey" "blah"]) 
+         (is (= (parse-args '[[:post "/"] [] "hey" "blah"])
                {:fn-name 'POST--
                 :url "/"
                 :action 'compojure.core/POST
                 :destruct []
                 :body '("hey" "blah")}))
-         (is (= (parse-args '["/test" {} "hey"]) 
+         (is (= (parse-args '["/test" {} "hey"])
                {:fn-name 'GET--test
                 :url "/test"
                 :action 'compojure.core/GET
@@ -122,13 +122,34 @@
            (resp/status 403
                         "not allowed"))
 
+(post-route "/post-route" []
+            (resp/status 403 "not allowed"))
+
+(defpage "/not-post-route" [] "success")
+(post-route "/not-post-route" [] "fail")
+
 (defpage "/pre" []
          "you should never see this")
+
+(compojure-route (ANY "/compojure" [] "compojure-route"))
 
 (deftest pre-route-test
          (-> (send-request "/pre")
            (has-status 403)
            (has-body "not allowed")))
+
+(deftest compojure-route-test
+  (-> (send-request "/compojure")
+      (has-status 200)
+      (has-body "compojure-route")))
+
+(deftest post-route-test
+  (-> (send-request "/post-route")
+      (has-status 403)
+      (has-body "not allowed"))
+  (-> (send-request "/not-post-route")
+      (has-status 200)
+      (has-body "success")))
 
 (deftest named-route-test
   (-> (send-request "/foo")
@@ -197,4 +218,3 @@
        "test"
        "test.@domain.com"
        "test@com"))
-

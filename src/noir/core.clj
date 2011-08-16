@@ -2,14 +2,12 @@
   "Functions to work with partials and pages."
   (:use hiccup.core
         compojure.core)
-  (:require [clojure.string :as string]
-            [compojure.route :as c-route]))
+  (:require [clojure.string :as string]))
 
 (defonce noir-routes (atom {}))
 (defonce route-funcs (atom {}))
 (defonce pre-routes (atom (sorted-map)))
-(defonce spec-routes [(c-route/resources "/")
-                        (ANY "*" [] {:status 404 :body nil})])
+(defonce post-routes (atom (list)))
 
 (defn- keyword->symbol [namesp kw]
   (symbol namesp (string/upper-case (name kw))))
@@ -17,7 +15,7 @@
 (defn- route->key [action rte]
   (let [action (string/replace (str action) #".*/" "")]
     (str action (-> rte
-                  (string/replace #"\." "!dot!")
+                 (string/replace #"\." "!dot!")
                   (string/replace #"/" "--")
                   (string/replace #":" ">")
                   (string/replace #"\*" "<")))))
@@ -147,3 +145,18 @@
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args)]
     `(swap! pre-routes assoc ~url (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
+
+(defmacro post-route
+  "Adds a route to the end of the route table and passes the entire request to
+   be desctructured and used in the body. These routes are guaranteed to be
+   evaluated after those created by defpage and before the generic catch-all and
+   resources routes."
+  [& args]
+  (let [{:keys [action destruct url body]} (parse-args args)]
+    `(swap! post-routes conj (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
+
+(defn compojure-route
+  "Adds a compojure route fn to the end of the route table. These routes are queried after
+   those created by defpage and before the generic catch-all and resources routes."
+  [compojure-func]
+  (swap! post-routes conj compojure-func))
