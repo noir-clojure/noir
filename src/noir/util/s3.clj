@@ -18,8 +18,8 @@
   "Given a server-spec which contains {:secret-key :access-key} execute the given body
   within the context of an S3 connection"
   [server-spec & body]
-  (binding [*s3* (service server-spec)]
-    ~@body))
+  `(binding [*s3* (service server-spec)]
+     ~@body))
 
 (defn put! 
   "Put the given file on S3 where bucket is the string name of the S3 bucket to use."
