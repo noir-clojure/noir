@@ -43,6 +43,11 @@
         (pack-routes))
       (wrap-custom-middleware))))
 
+(defn add-custom-middleware
+  "Add a middleware function to all noir handlers."
+  [func & args]
+  (swap! middleware conj [func args]))
+
 (defn wrap-noir-middleware
   "Wrap a base handler in all of noir's middleware"
   [handler opts]

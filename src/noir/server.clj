@@ -37,8 +37,8 @@
   "Add a middleware function to the noir server. Func is a standard ring middleware
   function, which will be passed the handler. Any extra args to be applied should be
   supplied along with the function."
-  [func & args]
-  (swap! handler/middleware conj [func args]))
+  [& args]
+  (apply handler/add-custom-middleware args))
 
 (defn start
   "Create a noir server bound to the specified port with a map of options and return it.
