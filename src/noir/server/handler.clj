@@ -2,8 +2,7 @@
   "Handler generation functions used by noir.server and other ring handler libraries."
   (:use [compojure.core :only [routes ANY]]
         ring.middleware.reload-modified)
-  (:require [compojure.handler :as handler]
-	    [compojure.route :as c-route]
+  (:require [compojure.route :as c-route]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
