@@ -12,7 +12,7 @@
             [noir.session :as session]
             [noir.validation :as validation]))
 
-(defonce middleware (atom #{}))
+(defonce middleware (atom []))
 
 (defn- spec-routes []
   [(c-route/resources "/" {:root (options/get :resource-root "public")})
