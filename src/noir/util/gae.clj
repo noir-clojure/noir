@@ -4,7 +4,6 @@
         [ring.middleware params
                          keyword-params
                          nested-params
-                         multipart-params
                          cookies
                          session])
   (:require [noir.server.handler :as handler]
