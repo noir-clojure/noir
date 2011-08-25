@@ -18,7 +18,7 @@
   "Given a server-spec which contains {:secret-key :access-key} execute the given body
   within the context of an S3 connection"
   [server-spec & body]
-  (binding [*s3* (service server-spec)]
+  `(binding [*s3* (service ~server-spec)]
     ~@body))
 
 (defn put! 
