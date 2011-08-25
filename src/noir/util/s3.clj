@@ -18,7 +18,7 @@
   "Given a server-spec which contains {:secret-key :access-key} execute the given body
   within the context of an S3 connection"
   [server-spec & body]
-  (binding [*s3* (service server-spec)]
+  `(binding [*s3* (service ~server-spec)]
     ~@body))
 
 (defn put! 
@@ -27,6 +27,13 @@
   (let [obj (new S3Object file)]
     (. obj setAcl (. AccessControlList REST_CANNED_PUBLIC_READ))
     (. *s3* putObject bucket obj)))
+
+(defn rename!
+  "Rename the given file on S3"
+  [bucket file new-file]
+  (let [new-obj (new S3Object new-file)]
+    (. new-obj setAcl (. AccessControlList REST_CANNED_PUBLIC_READ))
+    (. *s3* renameObject bucket file new-obj)))
 
 (defn list 
   "List all files in the bucket with the given prefix"
