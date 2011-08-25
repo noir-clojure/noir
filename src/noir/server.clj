@@ -18,7 +18,7 @@
             [noir.session :as session]
             [noir.validation :as validation]))
 
-(defonce *middleware* (atom #{}))
+(defonce *middleware* (ref []))
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
@@ -76,7 +76,10 @@
   function, which will be passed the handler. Any extra args to be applied should be
   supplied along with the function."
   [func & args]
-  (swap! *middleware* conj [func args]))
+  (dosync 
+    (let [mw [func args]]
+      (if-not (some #(= % mw) @*middleware*)
+        (alter *middleware* conj mw)))))
 
 (defn start 
   "Create a noir server bound to the specified port with a map of options and return it. 
