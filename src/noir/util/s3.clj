@@ -28,6 +28,13 @@
     (. obj setAcl (. AccessControlList REST_CANNED_PUBLIC_READ))
     (. *s3* putObject bucket obj)))
 
+(defn rename!
+  "Rename the given file on S3"
+  [bucket file new-file]
+  (let [new-obj (new S3Object new-file)]
+    (. new-obj setAcl (. AccessControlList REST_CANNED_PUBLIC_READ))
+    (. *s3* renameObject bucket file new-obj)))
+
 (defn list 
   "List all files in the bucket with the given prefix"
   [bucket prefix]
