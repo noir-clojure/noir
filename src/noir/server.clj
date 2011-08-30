@@ -25,7 +25,7 @@
     (require n)))
 
 (defn load-views-ns
-  "Require all the namespaces prefixed by the namespace symbold given so that the pages
+  "Require all the namespaces prefixed by the namespace symbol given so that the pages
   are loaded by the server."
   [& ns-syms]
   (doseq [ns-sym ns-syms
