@@ -6,13 +6,13 @@
 (defn xml 
   "Wraps the response with the content type for xml and sets the body to the content."
   [content]
-  {:header {"Content-Type" "text/xml"}
+  {:headers {"Content-Type" "text/xml"}
    :body content})
 
 (defn content-type
   "Wraps the response with the given content type and sets the body to the content."
   [ctype content]
-  {:header {"Content-Type" ctype}
+  {:headers {"Content-Type" ctype}
    :body content})
 
 (defn json 
