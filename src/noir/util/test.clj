@@ -3,6 +3,7 @@
   (:use clojure.test)
   (:require [noir.server :as server]
             [noir.session :as session]
+            [noir.validation :as vali]
             [noir.cookies :as cookies]
             [noir.options :as options]))
 
@@ -13,6 +14,7 @@
   "Executes the body within the context of Noir's bindings"
   [& body]
   `(binding [options/*options* options/default-opts
+             vali/*errors* (atom {})
              session/*noir-session* (atom {})
              cookies/*new-cookies* (atom {})
              cookies/*cur-cookies* (atom {})]

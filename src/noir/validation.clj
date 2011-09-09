@@ -70,7 +70,9 @@
   "For all fields given return true if any field contains errors. If none of the fields 
   contain errors, return false"
   [& field]
-  (some not-nil? (map get-errors field)))
+  (if-not (seq field)
+    (not (empty? @*errors*))
+    (some not-nil? (map get-errors field))))
 
 (defn on-error 
   "If the given field has an error, execute func and return its value"
