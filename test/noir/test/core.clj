@@ -7,6 +7,7 @@
             [noir.server :as server]
             [noir.util.middleware :as middleware]
             [noir.session :as session]
+            [noir.request :as request]
             [noir.options :as options]
             [noir.response :as resp]
             [noir.cookies :as cookies]
@@ -60,6 +61,20 @@
 
 (defpage "/test" {:keys [nme]}
          (str "Hello " nme))
+
+(defpage "/request" {}
+         (let [req (request/ring-request)]
+           (is req)
+           (is (map? req))
+           (is (:uri req))))
+
+(deftest request-middleware
+         (send-request "/request"))
+
+(deftest route-test
+         (-> (send-request "/test" {"nme" "chris"})
+           (has-status 200)
+           (has-body "Hello chris")))
 
 (deftest route-test
          (-> (send-request "/test" {"nme" "chris"})

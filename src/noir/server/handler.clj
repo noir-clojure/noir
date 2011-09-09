@@ -7,6 +7,7 @@
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
             [noir.exception :as exception]
+            [noir.request :as request]
             [noir.statuses :as statuses]
             [noir.options :as options]
             [noir.session :as session]
@@ -40,6 +41,7 @@
           ;; result of a modification are evaluated on the first reload.
           ((pack-routes) request))
         (pack-routes))
+      (request/wrap-request-map)
       (wrap-custom-middleware))))
 
 (defn add-custom-middleware
