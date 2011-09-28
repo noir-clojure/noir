@@ -203,6 +203,14 @@
 (deftest url-for-throws
   (is (thrown? Exception (url-for route-one-arg))))
 
+(defpage "/with space" []
+         "space")
+
+(deftest route-decoding
+  (-> (send-request "/with%20space")
+      (has-status 200)
+      (has-body "space")))
+
 (deftest wrap-utf
          ;;Technically this middleware is unnecessary now due to some changes in ring.
          ;;but this provides a nice test for custom middleware.

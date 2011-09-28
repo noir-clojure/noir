@@ -2,6 +2,7 @@
   "Handler generation functions used by noir.server and other ring handler libraries."
   (:use [compojure.core :only [routes ANY]]
         ring.middleware.reload-modified)
+  (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
@@ -18,6 +19,11 @@
 (defn- spec-routes []
   [(c-route/resources "/" {:root (options/get :resource-root "public")})
    (ANY "*" [] {:status 404 :body nil})])
+
+(defn- wrap-url-decode [handler]
+  (fn [req]
+    (let [req (assoc req :uri (URLDecoder/decode (:uri req)))]
+      (handler req))))
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
@@ -60,6 +66,7 @@
       (validation/wrap-noir-validation)
       (statuses/wrap-status-pages)
       (wrap-route-updating)
+      (wrap-url-decode)
       (exception/wrap-exceptions)
       (options/wrap-options opts))))
 
