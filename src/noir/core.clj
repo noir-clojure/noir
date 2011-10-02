@@ -169,7 +169,7 @@
   (custom-handler [:post \"/login\"] {:as req} (println \"hello \" req))
   => (POST \"/login\" {:as req} (println \"hello\" req))
 
-  These are primarily used to interface with other handler generating libraries, i.e. async alpeh handlers."
+  These are primarily used to interface with other handler generating libraries, i.e. async aleph handlers."
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args)]
     `(compojure-route (~action ~url ~destruct ~@body))))
