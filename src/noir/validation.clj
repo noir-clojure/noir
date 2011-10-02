@@ -68,7 +68,7 @@
 
 (defn errors? 
   "For all fields given return true if any field contains errors. If none of the fields 
-  contain errors, return false"
+  contain errors, return false. If no fields are supplied return true if any errors exist."
   [& field]
   (if-not (seq field)
     (not (empty? @*errors*))

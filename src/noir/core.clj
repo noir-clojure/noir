@@ -50,7 +50,7 @@
     (assoc :destruct cur)
     (assoc :body (rest all))))
 
-(defn parse-args
+(defn ^{:skip-wiki true} parse-args 
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
   [args]
   (-> args
@@ -89,7 +89,7 @@
      (html
        ~@body)))
 
-(defn route-arguments
+(defn ^{:skip-wiki true} route-arguments 
   "returns the list of route arguments in a route"
   [route]
   (->> route
@@ -110,8 +110,7 @@
               (string/replace path (str k) (str v))) url route-args)))
 
 (defmacro url-for
-  "given a named route, i.e. (url-for foo), where foo is a named
-  route, i.e.  (defpage foo \"/foo/:id\"), returns the url for the
+  "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
   route. If the route takes arguments, the second argument must be a
   map of route arguments to values
 
@@ -157,6 +156,20 @@
 
 (defn compojure-route
   "Adds a compojure route fn to the end of the route table. These routes are queried after
-   those created by defpage and before the generic catch-all and resources routes."
+   those created by defpage and before the generic catch-all and resources routes.
+  
+  These are primarily used to integrate generated routes from other libs into Noir."
   [compojure-func]
   (swap! post-routes conj compojure-func))
+
+(defmacro custom-handler
+  "Adds a handler to the end of the route table. This is equivalent to writing
+  a compojure route using noir's [:method route] syntax.
+
+  (custom-handler [:post \"/login\"] {:as req} (println \"hello \" req))
+  => (POST \"/login\" {:as req} (println \"hello\" req))
+
+  These are primarily used to interface with other handler generating libraries, i.e. async alpeh handlers."
+  [& args]
+  (let [{:keys [action destruct url body]} (parse-args args)]
+    `(compojure-route (~action ~url ~destruct ~@body))))

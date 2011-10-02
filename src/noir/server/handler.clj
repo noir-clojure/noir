@@ -71,6 +71,6 @@
       (options/wrap-options opts))))
 
 (defn base-handler
-  "Get the most basic Noir request handler, that only adds wrap-custom-middleware."
+  "Get the most basic Noir request handler, only adding wrap-custom-middleware and wrap-request-map."
   [& [opts]]
   (init-routes opts))

@@ -21,6 +21,13 @@
   `(binding [*s3* (service ~server-spec)]
      ~@body))
 
+(defn rename!
+  "Rename the given file on S3"
+  [bucket file new-file]
+  (let [new-obj (new S3Object new-file)]
+    (. new-obj setAcl (. AccessControlList REST_CANNED_PUBLIC_READ))
+    (. *s3* renameObject bucket file new-obj)))
+
 (defn put! 
   "Put the given file on S3 where bucket is the string name of the S3 bucket to use."
   [bucket file]
