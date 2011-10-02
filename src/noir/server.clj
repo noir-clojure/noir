@@ -47,7 +47,8 @@
   :mode - either :dev or :prod
   :ns - the root namepace of your project
   :resource-root - an alternative name for the public folder
-  :session-store - an alternate store for session handling"
+  :session-store - an alternate store for session handling
+  :cookie-attrs - custom session cookie attributes"
   [port & [opts]]
   (println "Starting server...")
   (let [server (jetty/run-jetty (gen-handler opts) {:port port :join? false})]
