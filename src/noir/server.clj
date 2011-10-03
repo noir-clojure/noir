@@ -46,12 +46,14 @@
 
   :mode - either :dev or :prod
   :ns - the root namepace of your project
+  :jetty-options - any extra options you want to send to jetty like :ssl?
   :resource-root - an alternative name for the public folder
   :session-store - an alternate store for session handling
   :cookie-attrs - custom session cookie attributes"
   [port & [opts]]
   (println "Starting server...")
-  (let [server (jetty/run-jetty (gen-handler opts) {:port port :join? false})]
+  (let [jetty-opts (merge {:port port :join? false} (:jetty-options opts))
+        server (jetty/run-jetty (gen-handler opts) jetty-opts)]
     (println (str "Server started on port [" port "]."))
     (println (str "You can view the site at http://localhost:" port))
     server))
