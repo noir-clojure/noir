@@ -17,7 +17,7 @@
   (let [vs (if (map? coll)
              (vals coll)
              coll)]
-    (map has-value? vs)))
+    (every? has-value? vs)))
 
 (defn not-nil? 
   "Returns true if v is not nil"
