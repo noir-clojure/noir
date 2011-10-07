@@ -142,8 +142,11 @@
 
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [& args]
-  (let [{:keys [action destruct url body]} (parse-args args)]
-    `(swap! pre-routes assoc ~url (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
+  (let [{:keys [action destruct url body]} (parse-args args)
+        safe-url (if (vector? url) 
+                   (first url)
+                   url)]
+    `(swap! pre-routes assoc ~safe-url (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
 
 (defmacro post-route
   "Adds a route to the end of the route table and passes the entire request to
