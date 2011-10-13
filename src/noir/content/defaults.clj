@@ -14,7 +14,8 @@
                [:style {:type "text/css"} (noir-css)]]
               [:body
                [:div#wrapper
-                 content]]))
+                [:div#content
+                 content]]]))
 
 (defpartial min-noir-layout [& content]
             (html5

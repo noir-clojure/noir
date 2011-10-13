@@ -8,8 +8,11 @@
 
 (def emphasis (mixin :color :#6bffbd))
 (def de-emph (mixin :color :#91979d))
-(def dark-background (mixin :background :#2a2b2b
+(def dark-background (mixin :background "url(/img/noir-bg.png)"
                             :color :#d1d9e1))
+(def emph-colors (mixin :background :#3f634d
+                        :border [:2px :solid :#3c8455]))
+
 
 (def light-text (mixin :color :#d1d9e1))
 (def box (mixin :border-radius :8px
@@ -29,8 +32,17 @@
           :padding [:60px :80px]
           :font-family "'Helvetica Neue',Helvetica,Verdana")
     (rule "#wrapper"
+          :margin [0 :auto]
+          :width :1000px)
+    (rule "#content"
           fldi
+          :width "100%"
           :padding-bottom :100px)
+    (rule "a"
+          :text-decoration :underline
+          de-emph
+          (rule "&:hover" 
+                emphasis))
     (rule "h1"
           :margin-bottom :0px
           light-text)
@@ -43,17 +55,46 @@
           fldi
           light-box
           :font-family "Monaco, Consolas, 'Courier New'")
+    (rule ".announce"
+          fldi
+          :width :970px
+          :text-align :center
+          :font-size :20px
+          :margin-top :20px
+          :margin-bottom :110px
+          emph-box
+          :padding :15px)
     (rule "#header"
-          :margin-bottom :50px)
-    (rule "ul"
+          fldi
+          :width "100%"
+          :margin-bottom :50px
+          (rule "h1"
+                fldi)
+          (rule "ul"
+                :float :right
+                :display :inline
+                :list-style :none
+                :margin-top :30px
+                (rule "li"
+                      fldi
+                      (rule "a"
+                            :text-decoration :none
+                            fldi
+                            light-box
+                            :padding :8px
+                            :margin-left :10px
+                            (rule "&:hover"
+                                  emph-colors)))))
+    (rule "ul.content"
+          fldi
           (rule "li"
                 fldi
                 :margin-bottom :55px
                 :width "100%"
                 (rule ".left"
                       fldi
-                      :width "45%"
-                      :margin-right "5%"
+                      :width "55%"
+                      :text-align :left
                       (rule "p" 
                             :padding 0
                             :margin 0
@@ -61,7 +102,8 @@
                             ))
                 (rule ".right"
                       fldi
-                      :width "50%"
+                      :margin-right "5%"
+                      :width "40%"
                       (rule "code"
                             :width "100%")
                       (rule "p"
@@ -80,7 +122,6 @@
 
     (rule "#exception" 
           :max-width :900px 
-          :min-width :500px
           (rule "h1"
                 :font-size :24px)
           (rule "ul"
