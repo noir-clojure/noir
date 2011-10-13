@@ -29,8 +29,9 @@
   are loaded by the server."
   [& ns-syms]
   (doseq [ns-sym ns-syms
-          n (filter #(re-seq (re-pattern (name ns-sym)) (name %))
-                    (find-namespaces-on-classpath))]
+          n (find-namespaces-on-classpath)
+          :let [pattern (re-pattern (name ns-sym))]
+          :when (re-seq pattern (name n))]
     (require n)))
 
 (defn add-middleware
