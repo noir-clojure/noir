@@ -16,7 +16,7 @@
    :body content})
 
 (defn json 
-  "Wraps the response in the json content type and stringifies the given content"
+  "Wraps the response in the json content type and generates json from the content."
   [content]
   {:headers {"Content-Type" "application/json"}
    :body (json/generate-string content)})
