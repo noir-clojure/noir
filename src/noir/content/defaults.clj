@@ -2,7 +2,6 @@
   #^{:skip-wiki true}
   noir.content.defaults
   (:use noir.core
-        noir.content.css
         hiccup.core
         hiccup.page-helpers))
 
@@ -11,7 +10,7 @@
               [:head
                [:title "Noir"]
                (include-css "/css/reset.css")
-               [:style {:type "text/css"} (noir-css)]]
+               (include-css "/css/noir.css")]
               [:body
                [:div#wrapper
                 [:div#content
@@ -22,7 +21,7 @@
               [:head
                [:title "Noir"]
                (include-css "/css/reset.css")
-               [:style {:type "text/css"} (noir-css)]]
+               (include-css "/css/noir.css")]
               [:body
                  content]))
 
