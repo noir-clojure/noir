@@ -6,3 +6,5 @@ pom.xml
 .lein-failures
 autodoc/
 docs/
+*.iml
+.idea
