@@ -10,6 +10,11 @@
 (declare ^:dynamic *noir-session*)
 (defonce mem (atom {}))
 
+(defn update-session!
+  "Swaps the session's old value with a new value obtained by applying
+  f to the old value and any args." [f & args]
+  (apply swap! *noir-session* f args))
+
 (defn put! 
   "Associates the key with the given value in the session"
   [k v]
