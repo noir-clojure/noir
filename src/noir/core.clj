@@ -94,8 +94,7 @@
   [route]
   (->> route
        (re-seq #"/:([^\/]+)")
-       (map second)
-       (map keyword)))
+       (map (comp keyword second))))
 
 (defn url-for* [route-fn route-args]
   (let [route-meta (-> route-fn meta)
