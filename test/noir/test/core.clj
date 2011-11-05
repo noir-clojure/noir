@@ -215,6 +215,11 @@
               (has-status 200)
               (has-body "<a href=\"/woohoo/hey\">link</a>"))))
 
+(deftest jsonp
+         (-> (resp/jsonp "jsonp245" {:pinot "noir"}) 
+             (has-content-type "application/javascript")
+             (has-body "jsonp245({\"pinot\":\"noir\"});")))
+
 (defpage "/with space" []
          "space")
 
