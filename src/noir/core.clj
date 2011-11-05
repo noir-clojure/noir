@@ -29,12 +29,12 @@
                               [nil all])]
         [{:fn-name fn-name} remaining]))
 
-(defn- parse-route [[{:keys [fn-name] :as result} [cur :as all]]]
+(defn- parse-route [[{:keys [fn-name] :as result} [cur :as all]] default-action]
   (when-not (or (vector? cur) (string? cur))
     (throwf "Routes must either be a string or vector, not a %s" (type cur)))
   (let [[action url] (if (vector? cur)
                        [(keyword->symbol "compojure.core" (first cur)) (second cur)]
-                       ['compojure.core/GET cur])
+                       [default-action cur])
         final (-> result
                 (assoc :fn-name (if fn-name
                                   fn-name
@@ -52,10 +52,10 @@
 
 (defn ^{:skip-wiki true} parse-args 
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
-  [args]
+  [args & [default-action]]
   (-> args
     (parse-fn-name)
-    (parse-route)
+    (parse-route (or default-action 'compojure.core/GET))
     (parse-destruct-body)))
 
 (defmacro defpage
@@ -122,7 +122,7 @@
   [route & [params]]
   (if (fn? route)
     (route params)
-    (let [[{fn-name :fn-name :as res}] (parse-route [{} [route]])
+    (let [[{fn-name :fn-name :as res}] (parse-route [{} [route]] 'compojure.core/GET)
           func (get @route-funcs (keyword fn-name))]
       (func params))))
 
@@ -135,7 +135,7 @@
 
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [& args]
-  (let [{:keys [action destruct url body]} (parse-args args)
+  (let [{:keys [action destruct url body]} (parse-args args 'compojure.core/ANY)
         safe-url (if (vector? url) 
                    (first url)
                    url)]

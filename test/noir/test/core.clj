@@ -151,9 +151,12 @@
 (compojure-route (ANY "/compojure" [] "compojure-route"))
 
 (deftest pre-route-test
+         (-> (send-request [:post "/pre"])
+             (has-status 403)
+             (has-body "not allowed"))
          (-> (send-request "/pre")
-           (has-status 403)
-           (has-body "not allowed")))
+             (has-status 403)
+             (has-body "not allowed")))
 
 (deftest compojure-route-test
   (-> (send-request "/compojure")
