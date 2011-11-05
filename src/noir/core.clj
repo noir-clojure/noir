@@ -92,36 +92,29 @@
 (defn ^{:skip-wiki true} route-arguments 
   "returns the list of route arguments in a route"
   [route]
-  (->> route
-       (re-seq #"/:([^\/]+)")
-       (map second)
-       (map keyword)))
+  (let [args (re-seq #"/:([^\/]+)" route)]
+    (seq (map (comp keyword second) args))))
 
 (defn url-for* [route-fn route-args]
-  (let [route-meta (-> route-fn meta)
-        url (-> route-meta ::url)
-        route-arg-names (route-arguments url)]
-    (when (not url)
-      (throwf "no url metadata on %s" route-fn))
-    (when (not (every? #(contains? route-args %) route-arg-names))
-      (throwf "missing route-arg for %s" (first (filter #(not (contains? route-args %)) route-arg-names))))
+  (let [url (-> route-fn meta ::url)
+        route-arg-names (when url (route-arguments url))]
+    (when-not url
+      (throwf "No url metadata on %s" route-fn))
+    (when-not (= (keys route-args) route-arg-names)
+      (throwf "Missing route-args %s" (filter #(not (contains? route-args %)) route-arg-names)))
     (reduce (fn [path [k v]]
-              (assert (keyword? k))
-              (string/replace path (str k) (str v))) url route-args)))
+              (string/replace path (str k) (str v)))
+            url
+            route-args)))
 
 (defmacro url-for
   "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
   route. If the route takes arguments, the second argument must be a
   map of route arguments to values
 
-  (url-for foo :id 3) => \"/foo/3\" "
-  ([route-fn & {:as arg-map}]
-     (let [curr-ns *ns*]
-       `(do
-          (let [route-fn# (ns-resolve ~curr-ns (quote ~route-fn))]
-            (when-not route-fn#
-              ((var throwf) "could not find route fn:" ~route-fn))
-            (url-for* route-fn# ~arg-map)))))) ;; use ns-resolve to resolve at runtime (rather than compile time), to avoid circular dependencies between views.
+  (url-for foo {:id 3}) => \"/foo/3\" "
+  ([route-fn & [arg-map]]
+   `(url-for* (var ~route-fn) ~arg-map)))
 
 (defn render
   "Renders the content for a route by calling the page like a function

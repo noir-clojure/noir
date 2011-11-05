@@ -200,7 +200,7 @@
 (defpage route-one-arg "/one-arg/:id" {id :id})
 
 (deftest url-args
-  (is (= "/one-arg/5" (url-for route-one-arg :id 5))))
+  (is (= "/one-arg/5" (url-for route-one-arg {:id 5}))))
 
 (deftest url-for-throws
   (is (thrown? Exception (url-for route-one-arg))))
