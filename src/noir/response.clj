@@ -21,6 +21,13 @@
   {:headers {"Content-Type" "application/json"}
    :body (json/generate-string content)})
 
+(defn jsonp
+  "Generates JSON for the given content and creates a javascript response for calling 
+  func-name with it."
+  [func-name content]
+  {:headers {"Content-Type" "application/javascript"}
+   :body (str func-name "(" (json/generate-string content) ");")})
+
 (defn status 
   "Wraps the content in the given status code"
   [code content]

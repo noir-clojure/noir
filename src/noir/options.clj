@@ -2,7 +2,7 @@
   "Allows access to Noir's server options"
   (:refer-clojure :exclude [get]))
 
-(declare ^:dynamic *options*)
+(def ^:dynamic *options* nil)
 (def default-opts {:ns (gensym)
                    :mode :dev})
 

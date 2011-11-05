@@ -4,6 +4,7 @@
         ring.middleware.reload-modified)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
+            [hiccup.core :as hiccup]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
@@ -29,6 +30,12 @@
   (if (options/dev-mode?)
     (wrap-reload-modified handler ["src"])
     handler))
+
+(defn- wrap-base-url [handler]
+  (let [url (options/get :base-url)]
+    (fn [req]
+      (binding [hiccup/*base-url* url]
+        (handler req)))))
 
 (defn- wrap-custom-middleware [handler]
   (reduce (fn [cur [func args]] (apply func cur args))
@@ -61,6 +68,7 @@
   (binding [options/*options* (options/compile-options opts)]
     (->
       handler
+      (wrap-base-url)
       (session/wrap-noir-session)
       (cookie/wrap-noir-cookies)
       (validation/wrap-noir-validation)

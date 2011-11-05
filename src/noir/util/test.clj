@@ -48,5 +48,5 @@
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."
   [route & [params]]
-  (let [handler (server/gen-handler)]
+  (let [handler (server/gen-handler options/*options*)]
     (handler (make-request route params))))

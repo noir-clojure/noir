@@ -73,14 +73,14 @@
   The default method is GET."
 
   [& args]
-  (let [{fn-name# :fn-name action# :action url# :url destruct# :destruct body# :body} (parse-args args)]
+  (let [{:keys [fn-name action url destruct body]} (parse-args args)]
     `(do
-       (defn ~fn-name# {::url ~url#
-                        ::action (quote ~action#)
-                        ::args (quote ~destruct#)} [~destruct#]
-         ~@body#)
-       (swap! route-funcs assoc ~(keyword fn-name#) ~fn-name#)
-       (swap! noir-routes assoc ~(keyword fn-name#) (~action# ~url# {params# :params} (~fn-name# params#))))))
+       (defn ~fn-name {::url ~url
+                        ::action (quote ~action)
+                        ::args (quote ~destruct)} [~destruct]
+         ~@body)
+       (swap! route-funcs assoc ~(keyword fn-name) ~fn-name)
+       (swap! noir-routes assoc ~(keyword fn-name) (~action ~url {params# :params} (~fn-name params#))))))
 
 (defmacro defpartial
   "Create a function that returns html using hiccup. The function is callable with the given name."

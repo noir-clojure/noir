@@ -1,6 +1,8 @@
 (ns noir.test.core
   (:use [noir.core]
-	[compojure.core]
+        [compojure.core]
+        [hiccup.core :only [html]]
+        [hiccup.page-helpers :only [link-to]]
         [noir.util.test])
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
@@ -202,6 +204,16 @@
 
 (deftest url-for-throws
   (is (thrown? Exception (url-for route-one-arg))))
+
+(defpage "/base-url" []
+         (html
+           (link-to "/hey" "link")))
+
+(deftest base-url
+        (binding [options/*options* {:base-url "/woohoo"}]
+          (-> (send-request "/base-url")
+              (has-status 200)
+              (has-body "<a href=\"/woohoo/hey\">link</a>"))))
 
 (defpage "/with space" []
          "space")
