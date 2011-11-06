@@ -39,7 +39,7 @@
   "A header redirect to a different url"
   [url]
   {:status 302
-   :headers {"Location" (resolve-uri url)}
+   :headers {"Location" (options/resolve-url url)}
    :body ""})
 
 (defn empty 

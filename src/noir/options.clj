@@ -13,7 +13,7 @@
     default-opts))
 
 (defn resolve-url [url]
-  (str (get :base-url "") url))
+  (str (clojure.core/get :base-url "") url))
 
 (defn get 
   "Get an option from the noir options map"
