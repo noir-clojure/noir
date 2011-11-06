@@ -1,13 +1,14 @@
 ##Changes for 1.2.1
 * BREAKING CHANGE: (url-for) now takes a map of params instead of key-value pairs: (url-for foo {:id 2})
-* Updated noir.content to be prettier/more informative 
 * Added noir.response/jsonp
 * Added :base-url option to noir.server so that you can run noir at different root urls
+* Added noir.session/swap! to do atomic updates to the session
+* Updated noir.content to be prettier/more informative 
 * Fixed pre-route to use ANY by default
-* Removed cssgen dependency
-* Refactored the way noir.core parses urls for routes to be significantly simpler
 * Fixed issue that cause complex pre-routes not work
 * Fixed a couple of doc strings to be clearer
+* Refactored the way noir.core parses urls for routes to be significantly simpler
+* Removed cssgen dependency
 * Moved to latest Ring
 
 ##Changes for 1.2.0
