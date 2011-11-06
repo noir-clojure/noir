@@ -132,7 +132,7 @@
 (defpage "/utf" []
   "ąčęė")
 
-(deftest url-args
+(deftest url-for-before-def
   (is (= "/one-arg/5" (url-for route-one-arg {:id 5}))))
 
 (defpage foo "/foo" []
