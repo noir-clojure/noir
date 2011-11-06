@@ -20,8 +20,6 @@ If you want to include Noir in an already created leiningen project, simply add 
 [noir "1.2.1"]
 ```
 
-You can also use [noir-cljs](https://github.com/ibdknox/noir-cljs) to add ClojureScript compilation to Noir via middleware.
-
 ## Docs
 * [Web Noir](http://www.webnoir.org)
 
