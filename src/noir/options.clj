@@ -12,15 +12,15 @@
     (merge default-opts opts)
     default-opts))
 
-(defn resolve-url [url]
-  (str (clojure.core/get :base-url "") url))
-
 (defn get 
   "Get an option from the noir options map"
   ([k default]
    (clojure.core/get *options* k default))
   ([k]
    (clojure.core/get *options* k)))
+
+(defn resolve-url [url]
+  (str (get :base-url "") url))
 
 (defn dev-mode? 
   "Returns if the server is currently in development mode"
