@@ -113,7 +113,8 @@
 
   (url-for foo {:id 3}) => \"/foo/3\" "
   ([route-fn & [arg-map]]
-   `(url-for* (var ~route-fn) ~arg-map)))
+   (let [cur-ns *ns*]
+   `(url-for* (ns-resolve ~cur-ns (quote ~route-fn)) ~arg-map))))
 
 (defn render
   "Renders the content for a route by calling the page like a function
