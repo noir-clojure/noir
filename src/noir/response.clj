@@ -1,7 +1,8 @@
 (ns noir.response
   "Simple response helpers to change the content type, redirect, or return a canned response"
   (:refer-clojure :exclude [empty])
-  (:require [clj-json.core :as json]))
+  (:require [clj-json.core :as json]
+            [noir.options :as options]))
 
 (defn xml 
   "Wraps the response with the content type for xml and sets the body to the content."
@@ -38,7 +39,7 @@
   "A header redirect to a different url"
   [url]
   {:status 302
-   :headers {"Location" url}
+   :headers {"Location" (resolve-uri url)}
    :body ""})
 
 (defn empty 
