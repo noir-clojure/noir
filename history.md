@@ -1,5 +1,6 @@
 ##Changes for 1.2.1
 * BREAKING CHANGE: (url-for) now takes a map of params instead of key-value pairs: (url-for foo {:id 2})
+* Changed noir.content.pages to noir.content.getting-started
 * Added noir.response/jsonp
 * Added :base-url option to noir.server so that you can run noir at different root urls
 * Added noir.session/swap! to do atomic updates to the session
