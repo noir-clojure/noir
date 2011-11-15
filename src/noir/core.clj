@@ -99,7 +99,7 @@
         route-arg-names (when url (route-arguments url))]
     (when-not url
       (throwf "No url metadata on %s" route-fn))
-    (when-not (= (keys route-args) route-arg-names)
+    (when-not (= (set (keys route-args)) (set route-arg-names))
       (throwf "Missing route-args %s" (filter #(not (contains? route-args %)) route-arg-names)))
     (reduce (fn [path [k v]]
               (string/replace path (str k) (str v)))
