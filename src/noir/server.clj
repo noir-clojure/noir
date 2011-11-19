@@ -48,7 +48,8 @@
   :mode - either :dev or :prod
   :ns - the root namepace of your project
   :jetty-options - any extra options you want to send to jetty like :ssl?
-  :base-url - the root url to prepend to generated links and resources 
+  :base-url - the root url to prepend to generated links and resources
+  :static-root - an alternative top-level URL path for resources
   :resource-root - an alternative name for the public folder
   :session-store - an alternate store for session handling
   :cookie-attrs - custom session cookie attributes"
