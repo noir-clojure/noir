@@ -17,9 +17,11 @@
 
 (defonce middleware (atom []))
 
+(defn- static-routes []
+  [(c-route/resources (str "/" (options/get :static-root)) {:root (options/get :resource-root "public")})])
+
 (defn- spec-routes []
-  [(c-route/resources "/" {:root (options/get :resource-root "public")})
-   (ANY "*" [] {:status 404 :body nil})])
+  [(ANY "*" [] {:status 404 :body nil})])
 
 (defn- wrap-url-decode [handler]
   (fn [req]
@@ -43,7 +45,9 @@
           (seq @middleware)))
 
 (defn- pack-routes []
-  (apply routes (concat (vals @noir/pre-routes) (vals @noir/noir-routes) @noir/post-routes (spec-routes))))
+  (if (options/get :static-root)
+    (apply routes (concat (vals @noir/pre-routes) (static-routes) (vals @noir/noir-routes) @noir/post-routes (spec-routes)))
+    (apply routes (concat (vals @noir/pre-routes) (vals @noir/noir-routes) @noir/post-routes (static-routes) (spec-routes)))))
 
 (defn- init-routes [opts]
   (binding [options/*options* (options/compile-options opts)]
