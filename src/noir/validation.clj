@@ -44,8 +44,10 @@
 ;;errors and rules
 (defn get-errors 
   "Get the errors for the given field. This will return a vector of all error strings or nil."
-  [field]
-  (get @*errors* field))
+  [& [field]]
+  (if field
+    (get @*errors* field)
+    (apply concat (vals @*errors*))))
 
 (defn set-error 
   "Explicitly set an error for the given field. This can be used to 

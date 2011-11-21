@@ -10,3 +10,9 @@
     (is (vali/errors?))
     (is (vali/errors? :a))
     (is (not (vali/errors? :b)))))
+
+(deftest get-all-errors
+  (with-noir
+    (vali/set-error :a "blah")
+    (vali/set-error :b "cool")
+    (is (= (set (vali/get-errors)) (set ["blah" "cool"])))))

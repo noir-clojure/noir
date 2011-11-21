@@ -24,24 +24,32 @@
   (throw (Exception. (apply format msg args))))
 
 (defn- parse-fn-name [[cur :as all]]
-  (let [[fn-name remaining] (if (symbol? cur)
+  (let [[fn-name remaining] (if (and (symbol? cur)
+                                     (or (@route-funcs (keyword (name cur))) 
+                                         (not (resolve cur))))
                               [cur (rest all)]
                               [nil all])]
     [{:fn-name fn-name} remaining]))
 
 (defn- parse-route [[{:keys [fn-name] :as result} [cur :as all]] default-action]
-  (when-not (or (vector? cur) (string? cur))
-    (throwf "Routes must either be a string or vector, not a %s" (type cur)))
-  (let [[action url] (if (vector? cur)
-                       [(keyword->symbol "compojure.core" (first cur)) (second cur)]
-                       [default-action cur])
-        final (-> result
-                  (assoc :fn-name (if fn-name
-                                    fn-name
-                                    (symbol (route->key action url))))
-                  (assoc :url url)
-                  (assoc :action action))]
-    [final (rest all)]))
+  (let [cur (if (symbol? cur)
+              (try 
+                (deref (resolve cur))
+                (catch Exception e
+                  (throwf "Symbol given for route has no value")))
+              cur)]
+    (when-not (or (vector? cur) (string? cur))
+      (throwf "Routes must either be a string or vector, not a %s" (type cur)))
+    (let [[action url] (if (vector? cur)
+                         [(keyword->symbol "compojure.core" (first cur)) (second cur)]
+                         [default-action cur])
+          final (-> result
+                    (assoc :fn-name (if fn-name
+                                      fn-name
+                                      (symbol (route->key action url))))
+                    (assoc :url url)
+                    (assoc :action action))]
+      [final (rest all)])))
 
 (defn- parse-destruct-body [[result [cur :as all]]]
   (when-not (some true? (map #(% cur) [vector? map? symbol?]))
@@ -91,20 +99,28 @@
 (defn ^{:skip-wiki true} route-arguments 
   "returns the list of route arguments in a route"
   [route]
-  (let [args (re-seq #"/:([^\/]+)" route)]
-    (seq (map (comp keyword second) args))))
+  (let [args (re-seq #"/(:([^\/]+)|\*)" route)]
+    (set (map #(keyword (or (nth % 2) (second %))) args))))
 
-(defn url-for* [route-fn route-args]
-  (let [url (-> route-fn meta ::url)
-        route-arg-names (when url (route-arguments url))]
-    (when-not url
-      (throwf "No url metadata on %s" route-fn))
-    (when-not (= (keys route-args) route-arg-names)
-      (throwf "Missing route-args %s" (filter #(not (contains? route-args %)) route-arg-names)))
+(defn url-for* [url route-args]
+  (let [url (if (vector? url) ;;handle complex routes
+              (first url)
+              url)
+        route-arg-names (route-arguments url)]
+    (when-not (= (set (keys route-args)) route-arg-names)
+      (throwf "Missing route-args %s" (vec (filter #(not (contains? route-args %)) route-arg-names))))
     (reduce (fn [path [k v]]
-              (string/replace path (str k) (str v)))
+              (if (= k :*)
+                (string/replace path "*" (str v)) 
+                (string/replace path (str k) (str v))))
             url
             route-args)))
+
+(defn url-for-fn* [route-fn route-args]
+  (let [url (-> route-fn meta ::url)]
+    (when-not url
+      (throwf "No url metadata on %s" route-fn))
+    (url-for* url route-args)))
 
 (defmacro url-for
   "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
@@ -112,9 +128,17 @@
   map of route arguments to values
 
   (url-for foo {:id 3}) => \"/foo/3\" "
-  ([route-fn & [arg-map]]
-   (let [cur-ns *ns*]
-   `(url-for* (ns-resolve ~cur-ns (quote ~route-fn)) ~arg-map))))
+  ([route & [arg-map]]
+   (let [cur-ns *ns*
+         route (if (symbol? route)
+                 `(ns-resolve ~cur-ns (quote ~route))
+                 `(delay ~route))]
+   `(let [var# ~route]
+      (cond
+        (string? @var#) (url-for* @var# ~arg-map)
+        (vector? @var#) (url-for* (second @var#) ~arg-map)
+        (fn? @var#) (url-for-fn* var# ~arg-map)
+        :else (throw (Exception. (str "Unknown route type: " @var#))))))))
 
 (defn render
   "Renders the content for a route by calling the page like a function
