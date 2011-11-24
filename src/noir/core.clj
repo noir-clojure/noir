@@ -107,7 +107,7 @@
               (first url)
               url)
         route-arg-names (route-arguments url)]
-    (when-not (= (set (keys route-args)) route-arg-names)
+    (when-not (every? (set (keys route-args)) route-arg-names)
       (throwf "Missing route-args %s" (vec (filter #(not (contains? route-args %)) route-arg-names))))
     (reduce (fn [path [k v]]
               (if (= k :*)

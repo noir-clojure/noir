@@ -179,9 +179,6 @@
       (has-status 200)
       (has-body "named-route")))
 
-(deftest url-for-test
-  (is (= "/foo" (url-for foo))))
-
 (defpage [:post "/post-route"] {:keys [nme]}
   (str "Post " nme))
 
@@ -207,10 +204,13 @@
 (def two-args "/two-args/:arg1/:arg2")
 
 (deftest url-args
+  (is (= "/foo" (url-for foo)))
   (is (= "/one-arg/cool"(url-for "/one-arg/:blah" {:blah "cool"})))
   (is (= "/one-arg/5" (url-for route-one-arg {:id 5})))
   (is (= "/star/blah/cool" (url-for "/star/*" {:* "blah/cool"})))
   (is (= "/two-args/blah/cool" (url-for two-args {:arg2 "cool" :arg1 "blah"})))
+  ;; make sure only subset matters
+  (is (= "/one-arg/5" (url-for route-one-arg {:id 5 :name "chris"})))
   ;; make sure order doesn't matter
   (is (= "/two-args/blah/cool" (url-for two-args {:arg1 "blah" :arg2 "cool"}))))
 
