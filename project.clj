@@ -4,7 +4,7 @@
                            [compojure "0.6.5"]
                            [org.clojure/tools.namespace "0.1.0"]
                            [clj-json "0.4.3"]
-                           [ring "1.0.0-RC1"]
+                           [ring "1.0.0"]
                            [hiccup "0.3.6"]
                            [clj-stacktrace "0.2.3"]
                            [ring-reload-modified "0.1.1"]
