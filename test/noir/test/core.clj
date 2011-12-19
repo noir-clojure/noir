@@ -232,7 +232,7 @@
       (has-content-type "application/javascript")
       (has-body "jsonp245({\"pinot\":\"noir\"});")))
 
-(defpage "/with space" []
+(defpage "/with%20space" []
   "space")
 
 (deftest route-decoding
@@ -241,6 +241,9 @@
       (has-body "space")))
 
 (deftest wrap-utf
+  (-> (send-request "/utf")
+      (has-content-type "text/html; charset=utf-8")
+      (has-body "ąčęė"))
   ;;Technically this middleware is unnecessary now due to some changes in ring.
   ;;but this provides a nice test for custom middleware.
   (server/add-middleware middleware/wrap-utf-8)

@@ -21,11 +21,6 @@
   [(c-route/resources "/" {:root (options/get :resource-root "public")})
    (ANY "*" [] {:status 404 :body nil})])
 
-(defn- wrap-url-decode [handler]
-  (fn [req]
-    (let [req (assoc req :uri (URLDecoder/decode (:uri req)))]
-      (handler req))))
-
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
     (wrap-reload-modified handler ["src"])
@@ -74,7 +69,6 @@
       (validation/wrap-noir-validation)
       (statuses/wrap-status-pages)
       (wrap-route-updating)
-      (wrap-url-decode)
       (exception/wrap-exceptions)
       (options/wrap-options opts))))
 
