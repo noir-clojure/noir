@@ -127,10 +127,7 @@
   (is (thrown? Exception (parse-args '["/" '() 3])))
   (is (thrown? Exception (parse-args '[{} '() 3]))))
 
-(defpage "/" [])
-
-(defpage "/utf" []
-  "ąčęė")
+(defpage "/utf" [] "ąčęė")
 
 (deftest url-for-before-def
   (is (= "/one-arg/5" (url-for route-one-arg {:id 5}))))
@@ -139,8 +136,7 @@
   "named-route")
 
 (pre-route "/pre" []
-           (resp/status 403
-                        "not allowed"))
+           (resp/status 403 "not allowed"))
 
 (post-route "/post-route" []
             (resp/status 403 "not allowed"))
@@ -148,8 +144,7 @@
 (defpage "/not-post-route" [] "success")
 (post-route "/not-post-route" [] "fail")
 
-(defpage "/pre" []
-  "you should never see this")
+(defpage "/pre" [] "you should never see this")
 
 (compojure-route (ANY "/compojure" [] "compojure-route"))
 
@@ -239,6 +234,21 @@
   (-> (send-request "/with%20space")
       (has-status 200)
       (has-body "space")))
+
+(defpage "/wrap-route" [] "hey!")
+(defn interceptor [handler]
+  (fn [req]
+    (let [resp (handler req)]
+      (assoc resp :body "intercepted"))))
+
+(deftest wrap-route-middleware
+  (-> (send-request "/wrap-route")
+      (has-body "hey!"))
+
+  (server/wrap-route "/wrap-route" interceptor)
+
+  (-> (send-request "/wrap-route")
+      (has-body "intercepted")))
 
 (deftest wrap-utf
   (-> (send-request "/utf")
