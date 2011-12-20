@@ -9,6 +9,4 @@
                            [clj-stacktrace "0.2.3"]
                            [ring-reload-modified "0.1.1"]
                            [net.java.dev.jets3t/jets3t "0.8.1"]
-                           [org.mindrot/jbcrypt "0.3m"]]
-            :dev-dependencies [[org.clojars.rayne/autodoc "0.8.0-SNAPSHOT"]]
-            :autodoc {:name "Noir" :page-title "Noir Docs" :load-except-list [#"noir\/content.*"]})
+                           [org.mindrot/jbcrypt "0.3m"]])
