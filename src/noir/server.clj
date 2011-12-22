@@ -38,8 +38,18 @@
   "Add a middleware function to the noir server. Func is a standard ring middleware
   function, which will be passed the handler. Any extra args to be applied should be
   supplied along with the function."
-  [& args]
-  (apply handler/add-custom-middleware args))
+  [func & args]
+  (apply handler/add-custom-middleware func args))
+
+(defn wrap-route
+  "Add a middleware function to a specific route. Route is a standard route you would
+  use for defpage, func is a ring middleware function, and args are any additional args
+  to pass to the middleware function. You can wrap the resources and catch-all routes by
+  supplying the routes :resources and :catch-all respectively:
+  
+  (wrap-route :resources some-caching-middleware)"
+  [route middleware & args]
+  (apply handler/wrap-route route middleware args))
 
 (defn start
   "Create a noir server bound to the specified port with a map of options and return it.
@@ -51,7 +61,7 @@
   :base-url - the root url to prepend to generated links and resources 
   :resource-root - an alternative name for the public folder
   :session-store - an alternate store for session handling
-  :cookie-attrs - custom session cookie attributes"
+  :session-cookie-attrs - custom session cookie attributes"
   [port & [opts]]
   (println "Starting server...")
   (let [jetty-opts (merge {:port port :join? false} (:jetty-options opts))
