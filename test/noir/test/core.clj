@@ -127,10 +127,7 @@
   (is (thrown? Exception (parse-args '["/" '() 3])))
   (is (thrown? Exception (parse-args '[{} '() 3]))))
 
-(defpage "/" [])
-
-(defpage "/utf" []
-  "ąčęė")
+(defpage "/utf" [] "ąčęė")
 
 (deftest url-for-before-def
   (is (= "/one-arg/5" (url-for route-one-arg {:id 5}))))
@@ -139,8 +136,7 @@
   "named-route")
 
 (pre-route "/pre" []
-           (resp/status 403
-                        "not allowed"))
+           (resp/status 403 "not allowed"))
 
 (post-route "/post-route" []
             (resp/status 403 "not allowed"))
@@ -148,8 +144,7 @@
 (defpage "/not-post-route" [] "success")
 (post-route "/not-post-route" [] "fail")
 
-(defpage "/pre" []
-  "you should never see this")
+(defpage "/pre" [] "you should never see this")
 
 (compojure-route (ANY "/compojure" [] "compojure-route"))
 
@@ -179,9 +174,6 @@
       (has-status 200)
       (has-body "named-route")))
 
-(deftest url-for-test
-  (is (= "/foo" (url-for foo))))
-
 (defpage [:post "/post-route"] {:keys [nme]}
   (str "Post " nme))
 
@@ -204,9 +196,18 @@
       (has-body "Post chris")))
 
 (defpage route-one-arg "/one-arg/:id" {id :id})
+(def two-args "/two-args/:arg1/:arg2")
 
 (deftest url-args
-  (is (= "/one-arg/5" (url-for route-one-arg {:id 5}))))
+  (is (= "/foo" (url-for foo)))
+  (is (= "/one-arg/cool"(url-for "/one-arg/:blah" {:blah "cool"})))
+  (is (= "/one-arg/5" (url-for route-one-arg {:id 5})))
+  (is (= "/star/blah/cool" (url-for "/star/*" {:* "blah/cool"})))
+  (is (= "/two-args/blah/cool" (url-for two-args {:arg2 "cool" :arg1 "blah"})))
+  ;; make sure only subset matters
+  (is (= "/one-arg/5" (url-for route-one-arg {:id 5 :name "chris"})))
+  ;; make sure order doesn't matter
+  (is (= "/two-args/blah/cool" (url-for two-args {:arg1 "blah" :arg2 "cool"}))))
 
 (deftest url-for-throws
   (is (thrown? Exception (url-for route-one-arg))))
@@ -226,7 +227,7 @@
       (has-content-type "application/javascript")
       (has-body "jsonp245({\"pinot\":\"noir\"});")))
 
-(defpage "/with space" []
+(defpage "/with%20space" []
   "space")
 
 (deftest route-decoding
@@ -234,7 +235,25 @@
       (has-status 200)
       (has-body "space")))
 
+(defpage "/wrap-route" [] "hey!")
+(defn interceptor [handler]
+  (fn [req]
+    (let [resp (handler req)]
+      (assoc resp :body "intercepted"))))
+
+(deftest wrap-route-middleware
+  (-> (send-request "/wrap-route")
+      (has-body "hey!"))
+
+  (server/wrap-route "/wrap-route" interceptor)
+
+  (-> (send-request "/wrap-route")
+      (has-body "intercepted")))
+
 (deftest wrap-utf
+  (-> (send-request "/utf")
+      (has-content-type "text/html; charset=utf-8")
+      (has-body "ąčęė"))
   ;;Technically this middleware is unnecessary now due to some changes in ring.
   ;;but this provides a nice test for custom middleware.
   (server/add-middleware middleware/wrap-utf-8)

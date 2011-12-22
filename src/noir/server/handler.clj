@@ -1,7 +1,8 @@
 (ns noir.server.handler
   "Handler generation functions used by noir.server and other ring handler libraries."
   (:use [compojure.core :only [routes ANY]]
-        ring.middleware.reload-modified)
+        ring.middleware.reload-modified
+        ring.middleware.flash)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
             [hiccup.core :as hiccup]
@@ -16,15 +17,42 @@
             [noir.validation :as validation]))
 
 (defonce middleware (atom []))
+(defonce wrappers (atom []))
 
-(defn- spec-routes []
-  [(c-route/resources "/" {:root (options/get :resource-root "public")})
-   (ANY "*" [] {:status 404 :body nil})])
+;;***************************************************
+;; Wrappers
+;;***************************************************
 
-(defn- wrap-url-decode [handler]
-  (fn [req]
-    (let [req (assoc req :uri (URLDecoder/decode (:uri req)))]
-      (handler req))))
+(defn wrappers-for [& urls]
+  (let [url-set (set urls)]
+    (group-by :url (filter #(url-set (:url %)) @wrappers))))
+
+(defn all-wrappers []
+  (group-by :url @wrappers))
+
+(defn wrappers->fn [wrapped]
+  (let [wrapped (if (coll? (first wrapped))
+                  wrapped
+                  [wrapped])]
+    (apply comp (map :func (reverse wrapped)))))
+
+(defn try-wrap [ws route]
+  (if ws
+    (let [func (wrappers->fn ws)]
+      (func route))
+    route))
+
+(defn add-route-middleware [rts]
+  (let [ws (all-wrappers)]
+    (for [[route-name route] rts]
+      (try-wrap (ws route-name) route))))
+
+(defn wrap-route [url func & params]
+  (swap! wrappers conj {:url (noir/route->name url) :func #(apply func % params)}))
+
+;;***************************************************
+;; Other middleware
+;;***************************************************
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
@@ -42,8 +70,22 @@
           handler
           (seq @middleware)))
 
+;;***************************************************
+;; Route packing
+;;***************************************************
+
+(defn- spec-routes []
+  (let [ws (wrappers-for :resources :catch-all)
+        resources (c-route/resources "/" {:root (options/get :resource-root "public")})
+        catch-all (ANY "*" [] {:status 404 :body nil})]
+    [(try-wrap (:resources ws) resources)
+     (try-wrap (:catch-all ws) catch-all)]))
+
 (defn- pack-routes []
-  (apply routes (concat (vals @noir/pre-routes) (vals @noir/noir-routes) @noir/post-routes (spec-routes))))
+  (apply routes (concat (add-route-middleware @noir/pre-routes)
+                        (add-route-middleware @noir/noir-routes)
+                        (add-route-middleware @noir/post-routes)
+                        @noir/compojure-routes)))
 
 (defn- init-routes [opts]
   (binding [options/*options* (options/compile-options opts)]
@@ -54,8 +96,8 @@
           ;; result of a modification are evaluated on the first reload.
           ((pack-routes) request))
         (pack-routes))
-      (request/wrap-request-map)
-      (wrap-custom-middleware))))
+      (wrap-custom-middleware)
+      (request/wrap-request-map))))
 
 (defn add-custom-middleware
   "Add a middleware function to all noir handlers."
@@ -66,17 +108,27 @@
   "Wrap a base handler in all of noir's middleware"
   [handler opts]
   (binding [options/*options* (options/compile-options opts)]
-    (->
-      handler
-      (wrap-base-url)
-      (session/wrap-noir-session)
-      (cookie/wrap-noir-cookies)
-      (validation/wrap-noir-validation)
-      (statuses/wrap-status-pages)
-      (wrap-route-updating)
-      (wrap-url-decode)
-      (exception/wrap-exceptions)
-      (options/wrap-options opts))))
+    (-> handler
+        (wrap-base-url)
+        (session/wrap-noir-session)
+        (session/wrap-noir-flash)
+        (cookie/wrap-noir-cookies)
+        (validation/wrap-noir-validation)
+        (statuses/wrap-status-pages)
+        (wrap-route-updating)
+        (exception/wrap-exceptions)
+        (options/wrap-options opts))))
+
+;; We want to not wrap these particular routes in session and flash middleware.
+(defn wrap-spec-routes
+  "Wrap a handler in noir's resource and catch-all routes."
+  [handler opts]
+  (routes handler
+          (-> (apply routes (spec-routes))
+              (wrap-base-url)
+              (statuses/wrap-status-pages)
+              (exception/wrap-exceptions)
+              (options/wrap-options opts))))
 
 (defn base-handler
   "Get the most basic Noir request handler, only adding wrap-custom-middleware and wrap-request-map."

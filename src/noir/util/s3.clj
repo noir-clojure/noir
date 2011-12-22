@@ -7,7 +7,7 @@
     (org.jets3t.service.impl.rest.httpclient RestS3Service)
     (org.jets3t.service.model S3Object)))
 
-(declare *s3*)
+(def ^{:dynamic true} *s3* nil)
 
 (defn service 
   "Create an S3 service object"
