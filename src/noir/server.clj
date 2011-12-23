@@ -2,7 +2,8 @@
   "A collection of functions to handle Noir's server and add middleware to the stack."
   (:use compojure.core
         [clojure.java.io :only [file]]
-        [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]])
+        [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]]
+        [ring.middleware.multipart-params])
   (:require [compojure.handler :as compojure]
             [ring.adapter.jetty :as jetty]
             [noir.server.handler :as handler]))
@@ -13,9 +14,10 @@
   routes have already been added to the route table."
   [& [opts]]
   (-> (handler/base-handler opts)
-      (compojure/site)
       (handler/wrap-noir-middleware opts)
-      (handler/wrap-spec-routes opts)))
+      (handler/wrap-spec-routes opts)
+      (compojure/api)
+      (wrap-multipart-params)))
 
 (defn load-views
   "Require all the namespaces in the given dir so that the pages are loaded

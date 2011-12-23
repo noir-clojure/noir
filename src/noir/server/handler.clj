@@ -110,8 +110,8 @@
   (binding [options/*options* (options/compile-options opts)]
     (-> handler
         (wrap-base-url)
-        (session/wrap-noir-session)
         (session/wrap-noir-flash)
+        (session/wrap-noir-session)
         (cookie/wrap-noir-cookies)
         (validation/wrap-noir-validation)
         (statuses/wrap-status-pages)
