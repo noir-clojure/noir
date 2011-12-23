@@ -63,7 +63,7 @@
   (fn [request]
     (binding [*cur-cookies* (:cookies request)
               *new-cookies* (atom {})]
-      (let [final (handler request)]
+      (when-let [final (handler request)]
         (assoc final :cookies (merge (:cookies final) @*new-cookies*))))))
 
 (defn wrap-noir-cookies [handler]
