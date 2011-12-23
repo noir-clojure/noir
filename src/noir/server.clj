@@ -13,8 +13,9 @@
   routes have already been added to the route table."
   [& [opts]]
   (-> (handler/base-handler opts)
-    (compojure/site)
-    (handler/wrap-noir-middleware opts)))
+      (compojure/site)
+      (handler/wrap-noir-middleware opts)
+      (handler/wrap-spec-routes opts)))
 
 (defn load-views
   "Require all the namespaces in the given dir so that the pages are loaded
