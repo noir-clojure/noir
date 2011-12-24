@@ -27,7 +27,6 @@
         final (-> orig
                   (assoc :headers headers)
                   (assoc :body content))]
-    (println @status-pages)
     final))
 
 (defn wrap-status-pages [handler]
