@@ -1,7 +1,7 @@
 (ns noir.response
   "Simple response helpers to change the content type, redirect, or return a canned response"
   (:refer-clojure :exclude [empty])
-  (:require [clj-json.core :as json]
+  (:require [cheshire.core :as json]
             [noir.options :as options]))
 
 (defn xml 

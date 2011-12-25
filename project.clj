@@ -1,9 +1,9 @@
-(defproject noir "1.3.0-alpha1"
+(defproject noir "1.3.0-alpha2"
             :description "Noir - a clojure web framework"
             :dependencies [[org.clojure/clojure "1.3.0"]
                            [compojure "1.0.0"]
                            [org.clojure/tools.namespace "0.1.0"]
-                           [clj-json "0.4.3"]
+                           [cheshire "2.0.4"]
                            [ring "1.0.1"]
                            [hiccup "0.3.7"]
                            [clj-stacktrace "0.2.3"]
