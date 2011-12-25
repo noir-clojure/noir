@@ -6,6 +6,8 @@
 * Fixed s3 var being dynamic
 * Fixed an issue with utf-8 routes being encoded incorrectly
 * Moved to ring 1.0.1 and compojure 1.0.0
+    * Fixes issue with no routes being loaded resulting in a 500
+    * Fixes issue with file names containing spaces being unreachable
 
 ##Changes for 1.2.1
 * BREAKING CHANGE: (url-for) now takes a map of params instead of key-value pairs: (url-for foo {:id 2})
