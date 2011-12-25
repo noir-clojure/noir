@@ -1,3 +1,14 @@
+##Changes for 1.2.2
+* Added an argless form of (noir.validation/errors?) that returns all errors
+* Added the ability to define routes with vars
+* Refactored defpage to allow for better errors when a param is passed incorrectly
+* Refactored url-for to be more robust
+* Fixed s3 var being dynamic
+* Fixed an issue with utf-8 routes being encoded incorrectly
+* Moved to ring 1.0.1 and compojure 1.0.0
+    * Fixes issue with no routes being loaded resulting in a 500
+    * Fixes issue with file names containing spaces being unreachable
+
 ##Changes for 1.2.1
 * BREAKING CHANGE: (url-for) now takes a map of params instead of key-value pairs: (url-for foo {:id 2})
 * Changed noir.content.pages to noir.content.getting-started
