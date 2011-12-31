@@ -75,7 +75,7 @@
   ([k not-found]
    (let [in (get-in @*noir-flash* [:incoming k])
          out (get-in @*noir-flash* [:outgoing k])]
-     (or in out not-found))))
+     (or out in not-found))))
 
 (defn noir-flash [handler]
   (fn [request]
