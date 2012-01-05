@@ -6,7 +6,7 @@
                            [clj-json "0.4.3"]
                            [ring "1.0.1"]
                            [hiccup "0.3.7"]
-                           [clj-stacktrace "0.2.3"]
+                           [clj-stacktrace "0.2.4"]
                            [ring-reload-modified "0.1.1"]
                            [net.java.dev.jets3t/jets3t "0.8.1"]
                            [org.mindrot/jbcrypt "0.3m"]]
