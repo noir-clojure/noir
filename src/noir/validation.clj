@@ -53,9 +53,8 @@
   "Explicitly set an error for the given field. This can be used to 
   create complex error cases, such as in a multi-step login process."
   [field error]
-  (let [merge-map (if (get-errors field)
-                    {field error}
-                    {field [error]})]
+  (let [merge-map {field (if (get-errors field)
+                           error [error])}]
     (swap! *errors* #(merge-with conj % merge-map))
     nil))
 
