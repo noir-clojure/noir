@@ -23,16 +23,16 @@
   (let [{:keys [status headers]} orig
         content (or (get-page status) (get-page 404))
         headers (merge {"Content-Type" "text/html; charset=utf-8"}
-                       headers)
-        final (-> orig
-                  (assoc :headers headers)
-                  (assoc :body content))]
-    final))
+                       headers)]
+    (assoc orig
+      :headers headers
+      :body content)))
 
 (defn wrap-status-pages [handler]
   (fn [request]
     (let [{status :status body :body :as resp} (handler request)]
       (if (and 
+            resp
             (not= status 200)
             (not body))
         (status-response resp)

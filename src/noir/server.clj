@@ -2,7 +2,8 @@
   "A collection of functions to handle Noir's server and add middleware to the stack."
   (:use compojure.core
         [clojure.java.io :only [file]]
-        [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]])
+        [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]]
+        [ring.middleware.multipart-params])
   (:require [compojure.handler :as compojure]
             [ring.adapter.jetty :as jetty]
             [noir.server.handler :as handler]))
@@ -13,8 +14,10 @@
   routes have already been added to the route table."
   [& [opts]]
   (-> (handler/base-handler opts)
-    (compojure/site)
-    (handler/wrap-noir-middleware opts)))
+      (handler/wrap-noir-middleware opts)
+      (handler/wrap-spec-routes opts)
+      (compojure/api)
+      (wrap-multipart-params)))
 
 (defn load-views
   "Require all the namespaces in the given dir so that the pages are loaded
@@ -38,8 +41,18 @@
   "Add a middleware function to the noir server. Func is a standard ring middleware
   function, which will be passed the handler. Any extra args to be applied should be
   supplied along with the function."
-  [& args]
-  (apply handler/add-custom-middleware args))
+  [func & args]
+  (apply handler/add-custom-middleware func args))
+
+(defn wrap-route
+  "Add a middleware function to a specific route. Route is a standard route you would
+  use for defpage, func is a ring middleware function, and args are any additional args
+  to pass to the middleware function. You can wrap the resources and catch-all routes by
+  supplying the routes :resources and :catch-all respectively:
+  
+  (wrap-route :resources some-caching-middleware)"
+  [route middleware & args]
+  (apply handler/wrap-route route middleware args))
 
 (defn start
   "Create a noir server bound to the specified port with a map of options and return it.

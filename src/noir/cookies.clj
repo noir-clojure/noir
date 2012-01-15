@@ -24,10 +24,9 @@
   ([k] (get k nil))
   ([k default] 
    (let [str-k (name k)]
-     (if-let [v (or (get-in @*new-cookies* [str-k :value]) 
-                    (get-in *cur-cookies* [str-k :value]))]
-       v
-       default))))
+     (or (get-in @*new-cookies* [str-k :value]) 
+         (get-in *cur-cookies* [str-k :value])
+         default))))
 
 (defn signed-name [k]
   "Construct the name of the signing cookie using a simple suffix."
@@ -63,7 +62,7 @@
   (fn [request]
     (binding [*cur-cookies* (:cookies request)
               *new-cookies* (atom {})]
-      (let [final (handler request)]
+      (when-let [final (handler request)]
         (assoc final :cookies (merge (:cookies final) @*new-cookies*))))))
 
 (defn wrap-noir-cookies [handler]
