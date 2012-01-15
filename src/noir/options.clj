@@ -12,7 +12,7 @@
     (merge default-opts opts)
     default-opts))
 
-(defn get 
+(defn get
   "Get an option from the noir options map"
   ([k default]
    (clojure.core/get *options* k default))
@@ -22,7 +22,7 @@
 (defn resolve-url [url]
   (str (get :base-url "") url))
 
-(defn dev-mode? 
+(defn dev-mode?
   "Returns if the server is currently in development mode"
   []
   (= (get :mode) :dev))
@@ -32,4 +32,3 @@
     (fn [request]
       (binding [*options* final-opts]
         (handler request)))))
-

@@ -10,7 +10,7 @@
 (def content-types {:json "application/json"
                     :html "text/html"})
 
-(defmacro with-noir 
+(defmacro with-noir
   "Executes the body within the context of Noir's bindings"
   [& body]
   `(binding [options/*options* options/default-opts
@@ -20,19 +20,19 @@
              cookies/*cur-cookies* (atom {})]
      ~@body))
 
-(defn has-content-type 
+(defn has-content-type
   "Asserts that the response has the given content type"
   [resp ct]
   (is (= ct (get-in resp [:headers "Content-Type"])))
   resp)
 
-(defn has-status 
+(defn has-status
   "Asserts that the response has the given status"
   [resp stat]
   (is (= stat (get resp :status)))
   resp)
 
-(defn has-body 
+(defn has-body
   "Asserts that the response has the given body"
   [resp cont]
   (is (= cont (get resp :body)))
@@ -44,7 +44,7 @@
                        [:get route])]
     {:uri uri :request-method method :params params}))
 
-(defn send-request 
+(defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."
   [route & [params]]

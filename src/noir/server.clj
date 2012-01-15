@@ -49,7 +49,7 @@
   use for defpage, func is a ring middleware function, and args are any additional args
   to pass to the middleware function. You can wrap the resources and catch-all routes by
   supplying the routes :resources and :catch-all respectively:
-  
+
   (wrap-route :resources some-caching-middleware)"
   [route middleware & args]
   (apply handler/wrap-route route middleware args))
@@ -61,7 +61,7 @@
   :mode - either :dev or :prod
   :ns - the root namepace of your project
   :jetty-options - any extra options you want to send to jetty like :ssl?
-  :base-url - the root url to prepend to generated links and resources 
+  :base-url - the root url to prepend to generated links and resources
   :resource-root - an alternative name for the public folder
   :session-store - an alternate store for session handling
   :session-cookie-attrs - custom session cookie attributes"

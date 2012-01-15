@@ -17,7 +17,7 @@
             [noir.validation :as validation]))
 
 
-(defn gae-handler 
+(defn gae-handler
   "Create a Google AppEngine friendly handler for Noir. Use this instead
   of server/gen-handler for AppEngine projects."
   [opts]
