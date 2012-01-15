@@ -60,7 +60,7 @@
       (assoc :body (rest all))))
 
 (defn ^{:skip-wiki true} parse-args 
-  "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
+  "Parses the arguments to defpage. Returns a map containing the keys :fn-name :action :url :destruct :body"
   [args & [default-action]]
   (-> args
       (parse-fn-name)
@@ -133,7 +133,7 @@
     (url-for* url route-args)))
 
 (defmacro url-for
-  "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
+  "Given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
   route. If the route takes arguments, the second argument must be a
   map of route arguments to values
 
@@ -163,7 +163,7 @@
 (defmacro pre-route
   "Adds a route to the beginning of the route table and passes the entire request
   to be destructured and used in the body. These routes are the only ones to make
-  an ordering gaurantee. They will always be in order of ascending specificity (e.g. /* ,
+  an ordering guarantee. They will always be in order of ascending specificity (e.g. /* ,
   /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting
   a section based on privileges:
 
@@ -177,7 +177,7 @@
 
 (defmacro post-route
   "Adds a route to the end of the route table and passes the entire request to
-  be desctructured and used in the body. These routes are guaranteed to be
+  be destructured and used in the body. These routes are guaranteed to be
   evaluated after those created by defpage and before the generic catch-all and
   resources routes."
   [& args]

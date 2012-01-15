@@ -1,6 +1,6 @@
 # Noir
 
-A framework for writing clojure websites. Noir is currently being used in production at http://www.typewire.io
+A framework for writing clojure websites. Noir is currently being used in production at https://www.readyforzero.com
 
 Learn more at [Web Noir](http://www.webnoir.org) and see [Pinot](https://github.com/ibdknox/pinot) for its ClojureScript counterpart.
 
