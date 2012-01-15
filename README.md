@@ -17,7 +17,7 @@ lein run
 If you want to include Noir in an already created leiningen project, simply add this to your dependencies:
 
 ```clojure
-[noir "1.2.1"]
+[noir "1.2.2"]
 ```
 
 ## Docs
