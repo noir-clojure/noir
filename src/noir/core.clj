@@ -123,7 +123,7 @@
     (url-for* url route-args)))
 
 (defmacro url-for
-  "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
+  "Given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
   route. If the route takes arguments, the second argument must be a
   map of route arguments to values
 
