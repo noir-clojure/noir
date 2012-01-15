@@ -7,7 +7,8 @@
 (defonce noir-routes (atom {}))
 (defonce route-funcs (atom {}))
 (defonce pre-routes (atom (sorted-map)))
-(defonce post-routes (atom (list)))
+(defonce post-routes (atom []))
+(defonce compojure-routes (atom []))
 
 (defn- keyword->symbol [namesp kw]
   (symbol namesp (string/upper-case (name kw))))
@@ -59,12 +60,21 @@
       (assoc :body (rest all))))
 
 (defn ^{:skip-wiki true} parse-args 
-  "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
+  "Parses the arguments to defpage. Returns a map containing the keys :fn-name :action :url :destruct :body"
   [args & [default-action]]
   (-> args
       (parse-fn-name)
       (parse-route (or default-action 'compojure.core/GET))
       (parse-destruct-body)))
+
+(defn ^{:skip-wiki true} route->name
+  "Parses a set of route args into the keyword name for the route" 
+  [route]
+  (cond
+    (keyword? route) route
+    (fn? route) (keyword (:name (meta route)))
+    :else (let [res (first (parse-route [{} [route]] 'compojure.core/GET))]
+            (keyword (:fn-name res)))))
 
 (defmacro defpage
   "Adds a route to the server whose content is the the result of evaluating the body.
@@ -123,7 +133,7 @@
     (url-for* url route-args)))
 
 (defmacro url-for
-  "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
+  "Given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the
   route. If the route takes arguments, the second argument must be a
   map of route arguments to values
 
@@ -146,14 +156,14 @@
   [route & [params]]
   (if (fn? route)
     (route params)
-    (let [[{fn-name :fn-name :as res}] (parse-route [{} [route]] 'compojure.core/GET)
-          func (get @route-funcs (keyword fn-name))]
+    (let [rname (route->name route)
+          func (get @route-funcs rname)]
       (func params))))
 
 (defmacro pre-route
   "Adds a route to the beginning of the route table and passes the entire request
   to be destructured and used in the body. These routes are the only ones to make
-  an ordering gaurantee. They will always be in order of ascending specificity (e.g. /* ,
+  an ordering guarantee. They will always be in order of ascending specificity (e.g. /* ,
   /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting
   a section based on privileges:
 
@@ -167,12 +177,12 @@
 
 (defmacro post-route
   "Adds a route to the end of the route table and passes the entire request to
-  be desctructured and used in the body. These routes are guaranteed to be
+  be destructured and used in the body. These routes are guaranteed to be
   evaluated after those created by defpage and before the generic catch-all and
   resources routes."
   [& args]
-  (let [{:keys [action destruct url body]} (parse-args args)]
-    `(swap! post-routes conj (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
+  (let [{:keys [action destruct url body fn-name]} (parse-args args)]
+    `(swap! post-routes conj [~(keyword fn-name) (~action ~url {:as request#} ((fn [~destruct] ~@body) request#))])))
 
 (defn compojure-route
   "Adds a compojure route fn to the end of the route table. These routes are queried after
@@ -180,7 +190,7 @@
 
   These are primarily used to integrate generated routes from other libs into Noir."
   [compojure-func]
-  (swap! post-routes conj compojure-func))
+  (swap! compojure-routes conj compojure-func))
 
 (defmacro custom-handler
   "Adds a handler to the end of the route table. This is equivalent to writing

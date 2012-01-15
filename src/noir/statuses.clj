@@ -33,6 +33,7 @@
   (fn [request]
     (let [{status :status body :body :as resp} (handler request)]
       (if (and 
+            resp
             (not= status 200)
             (not body))
         (status-response resp)
