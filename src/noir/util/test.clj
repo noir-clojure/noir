@@ -51,3 +51,9 @@
   [route & [params]]
   (let [handler (server/gen-handler options/*options*)]
     (handler (make-request route params))))
+
+(defn send-request-map
+  "Send a ring-request map to the noir handler."
+  [ring-req]
+  (let [handler (server/gen-handler options/*options*)]
+    (handler ring-req)))
