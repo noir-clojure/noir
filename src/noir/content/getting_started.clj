@@ -1,4 +1,4 @@
-(ns 
+(ns
   #^{:skip-wiki true}
   noir.content.getting-started
   (:use noir.core
@@ -20,7 +20,7 @@
             (link-to "http://www.webnoir.org/" (image "/img/noir-logo.png" "Noir")))
 
 (defpartial header []
-            [:div#header 
+            [:div#header
              [:h1 (logo)]
              [:ul
               (map link-item header-links)]])
@@ -33,12 +33,12 @@
             [:li
              [:div.right
               [:pre
-              [:code 
+              [:code
 "(defpage \"/my-page\" []
   (html
     [:h1 \"This is my first page!\"]))"]]]
              [:div.left
-              [:p "Time to get going with our first page. Let's open views/welcome.clj 
+              [:p "Time to get going with our first page. Let's open views/welcome.clj
                   and use (defpage) to add a new page to our site. With that we can go to "
                   (link-to "http://localhost:8080/my-page" "http://localhost:8080/my-page")
                   " and see our handiwork."]]]
@@ -46,23 +46,23 @@
             [:li
              [:div.right
               [:pre
-              [:code 
+              [:code
 "(defpartial site-layout [& content]
   (html5
     [:head
       [:title \"my site\"]]
     [:body
       [:div#wrapper
-        content]]))"] ]]
+        content]]))"]]]
              [:div.left
-              [:p "We really need a layout for all our pages, so let's create a 
+              [:p "We really need a layout for all our pages, so let's create a
                   partial (a function that returns html). We'll do that
                   in views/common.clj since all your views will use it."]]]
 
             [:li
              [:div.right
               [:pre
-              [:code 
+              [:code
 "(defpage \"/my-page\" []
   (common/site-layout
     [:h1 \"Welcome to my site!\"]
@@ -76,7 +76,4 @@
               [:code "[noir.content.getting-started]"]]
              [:div.left
               [:p "That's it! You've created your own page. Now get rid of this one simply by
-                  removing the require for getting-started at the top."]]]
-
-            ]
-            ))
+                  removing the require for getting-started at the top."]]]]))

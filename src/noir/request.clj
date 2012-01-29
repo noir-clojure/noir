@@ -3,7 +3,7 @@
 
 (declare ^{:dynamic true} *request*)
 
-(defn ring-request 
+(defn ring-request
   "Returns back the current ring request map"
   []
   *request*)

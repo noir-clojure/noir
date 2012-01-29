@@ -13,24 +13,24 @@
 (declare ^:dynamic *noir-session*)
 (defonce mem (atom {}))
 
-(defn put! 
+(defn put!
   "Associates the key with the given value in the session"
   [k v]
   (clojure.core/swap! *noir-session* assoc k v))
 
-(defn get 
+(defn get
   "Get the key's value from the session, returns nil if it doesn't exist."
   ([k] (get k nil))
   ([k default]
     (clojure.core/get @*noir-session* k default)))
 
-(defn swap! 
+(defn swap!
   "Replace the current session's value with the result of executing f with
   the current value and args."
   [f & args]
   (apply clojure.core/swap! *noir-session* f args))
 
-(defn clear! 
+(defn clear!
   "Remove all data from the session and start over cleanly."
   []
   (reset! *noir-session* {}))
