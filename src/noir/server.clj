@@ -5,7 +5,6 @@
         [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]]
         [ring.middleware.multipart-params])
   (:require [compojure.handler :as compojure]
-            [ring.adapter.jetty :as jetty]
             [noir.server.handler :as handler]))
 
 (defn gen-handler
@@ -66,9 +65,13 @@
   :session-store - an alternate store for session handling
   :session-cookie-attrs - custom session cookie attributes"
   [port & [opts]]
+  ;; to allow for jetty to be excluded as a dependency, it is included
+  ;; here inline.
+  (require 'ring.adapter.jetty)
   (println "Starting server...")
-  (let [jetty-opts (merge {:port port :join? false} (:jetty-options opts))
-        server (jetty/run-jetty (gen-handler opts) jetty-opts)]
+  (let [run-fn (resolve 'ring.adapter.jetty/run-jetty) ;; force runtime resolution of jetty
+        jetty-opts (merge {:port port :join? false} (:jetty-options opts))
+        server (run-fn (gen-handler opts) jetty-opts)]
     (println (str "Server started on port [" port "]."))
     (println (str "You can view the site at http://localhost:" port))
     server))
