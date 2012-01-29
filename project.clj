@@ -5,7 +5,7 @@
                  [org.clojure/tools.namespace "0.1.0"]
                  [cheshire "2.0.4"]
                  [ring "1.0.1"]
-                 [hiccup "0.3.7"]
+                 [hiccup "0.3.8"]
                  [clj-stacktrace "0.2.4"]
                  [ring-reload-modified "0.1.1"]
                  [net.java.dev.jets3t/jets3t "0.8.1"]

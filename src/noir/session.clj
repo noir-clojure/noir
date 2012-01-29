@@ -56,8 +56,8 @@
   (-> handler
     (noir-session)
     (wrap-session
-     (assoc-if {:store (options/get :session-store (memory-store mem))}
-               :cookie-attrs (options/get :session-cookie-attrs)))))
+      (assoc-if {:store (options/get :session-store (memory-store mem))}
+                 :cookie-attrs (options/get :session-cookie-attrs)))))
 
 ;; ## Flash
 

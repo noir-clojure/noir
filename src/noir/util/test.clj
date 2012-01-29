@@ -16,6 +16,7 @@
   `(binding [options/*options* options/default-opts
              vali/*errors* (atom {})
              session/*noir-session* (atom {})
+             session/*noir-flash* (atom {})
              cookies/*new-cookies* (atom {})
              cookies/*cur-cookies* (atom {})]
      ~@body))

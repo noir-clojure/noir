@@ -5,7 +5,7 @@
         ring.middleware.flash)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
-            [hiccup.core :as hiccup]
+            [hiccup.middleware :as hiccup]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
@@ -59,12 +59,6 @@
     (wrap-reload-modified handler ["src"])
     handler))
 
-(defn- wrap-base-url [handler]
-  (let [url (options/get :base-url)]
-    (fn [req]
-      (binding [hiccup/*base-url* url]
-        (handler req)))))
-
 (defn- wrap-custom-middleware [handler]
   (reduce (fn [cur [func args]] (apply func cur args))
           handler
@@ -109,7 +103,7 @@
   [handler opts]
   (binding [options/*options* (options/compile-options opts)]
     (-> handler
-        (wrap-base-url)
+        (hiccup/wrap-base-url (options/get :base-url))
         (session/wrap-noir-flash)
         (session/wrap-noir-session)
         (cookie/wrap-noir-cookies)
@@ -125,7 +119,7 @@
   [handler opts]
   (routes handler
           (-> (apply routes (spec-routes))
-              (wrap-base-url)
+              (hiccup/wrap-base-url (options/get :base-url))
               (statuses/wrap-status-pages)
               (exception/wrap-exceptions)
               (options/wrap-options opts))))
