@@ -15,11 +15,12 @@
 
 (defn- route->key [action rte]
   (let [action (string/replace (str action) #".*/" "")]
-    (str action (-> rte
-                    (string/replace #"\." "!dot!")
-                    (string/replace #"/" "--")
-                    (string/replace #":" ">")
-                    (string/replace #"\*" "<")))))
+    (str action (reduce #(apply string/replace %1 %2)
+                        rte
+                        [[#"\." "!dot!"]
+                         [#"/" "--"]
+                         [#":" ">"]
+                         [#"\*" "<"]]))))
 
 (defn- throwf [msg & args]
   (throw (Exception. (apply format msg args))))
@@ -44,20 +45,19 @@
     (let [[action url] (if (vector? cur)
                          [(keyword->symbol "compojure.core" (first cur)) (second cur)]
                          [default-action cur])
-          final (-> result
-                    (assoc :fn-name (if fn-name
-                                      fn-name
-                                      (symbol (route->key action url))))
-                    (assoc :url url)
-                    (assoc :action action))]
+          final (assoc result
+                  :fn-name (or fn-name
+                               (symbol (route->key action url)))
+                  :url url
+                  :action action)]
       [final (rest all)])))
 
 (defn- parse-destruct-body [[result [cur :as all]]]
-  (when-not (some true? (map #(% cur) [vector? map? symbol?]))
+  (when-not (some #(% cur) [vector? map? symbol?])
     (throwf "Invalid destructuring param: %s" cur))
-  (-> result
-      (assoc :destruct cur)
-      (assoc :body (rest all))))
+  (assoc result
+    :destruct cur
+    :body (rest all)))
 
 (defn ^{:skip-wiki true} parse-args 
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
@@ -120,17 +120,16 @@
     (when-not (every? (set (keys route-args)) route-arg-names)
       (throwf "Missing route-args %s" (vec (filter #(not (contains? route-args %)) route-arg-names))))
     (reduce (fn [path [k v]]
-              (if (= k :*)
-                (string/replace path "*" (str v)) 
-                (string/replace path (str k) (str v))))
+              (string/replace path
+                              (if (= k :*) "*" (str k))
+                              (str v)))
             url
             route-args)))
 
 (defn url-for-fn* [route-fn route-args]
-  (let [url (-> route-fn meta ::url)]
-    (when-not url
-      (throwf "No url metadata on %s" route-fn))
-    (url-for* url route-args)))
+  (if-let [url (-> route-fn meta ::url)]
+    (url-for* url route-args)
+    (throwf "No url metadata on %s" route-fn)))
 
 (defmacro url-for
   "given a named route, i.e. (defpage foo \"/foo/:id\"), returns the url for the

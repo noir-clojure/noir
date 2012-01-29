@@ -24,10 +24,9 @@
   ([k] (get k nil))
   ([k default] 
    (let [str-k (name k)]
-     (if-let [v (or (get-in @*new-cookies* [str-k :value]) 
-                    (get-in *cur-cookies* [str-k :value]))]
-       v
-       default))))
+     (or (get-in @*new-cookies* [str-k :value]) 
+         (get-in *cur-cookies* [str-k :value])
+         default))))
 
 (defn signed-name [k]
   "Construct the name of the signing cookie using a simple suffix."

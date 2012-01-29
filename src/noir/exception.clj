@@ -12,24 +12,24 @@
        (re-seq #".*--" k)))
 
 (defn- key->route-fn [k]
-  (if (route-fn? k)
-    (let [with-slahes (-> k
-                        (string/replace #"!dot!" ".")
-                        (string/replace #"--" "/")
-                        (string/replace #">" ":")
-                        (string/replace #"<" "*"))
-          separated (string/replace with-slahes #"(POST|GET|HEAD|ANY|PUT|DELETE)" #(str (first %1) " :: "))]
-      separated)
-    k))
+  (if-not (route-fn? k)
+    k
+    (reduce #(apply string/replace %1 %2)
+            k
+            [[#"!dot!" "."]
+             [#"--" "/"]
+             [#">" ":"]
+             [#"<" "*"]
+             [#"(POST|GET|HEAD|ANY|PUT|DELETE)" #(str (first %1) " :: ")]])))
 
 (defn- ex-item [{anon :annon-fn func :fn nams :ns clj? :clojure f :file line :line :as ex}]
   (let [func-name (if (and anon func (re-seq #"eval" func))
                     "anon [fn]"
                     (key->route-fn func))
         ns-str (if clj?
-                 (if (route-fn? func)
-                   (str nams " :: " func-name)
-                   (str nams "/" func-name))
+                 (str nams
+                      (if (route-fn? func) " :: " "/")
+                      func-name)
                  (str (:method ex) "." (:class ex)))
         in-ns? (and nams (re-seq
                            (re-pattern (str (options/get :ns)))
