@@ -5,7 +5,7 @@
   (:require [clojure.string :as string]
             [noir.options :as options]
             [noir.statuses :as statuses]
-            [noir.content.defaults :as defaults]))  
+            [noir.content.defaults :as defaults]))
 
 (defn- route-fn? [k]
   (and k
@@ -33,8 +33,7 @@
                  (str (:method ex) "." (:class ex)))
         in-ns? (and nams (re-seq
                            (re-pattern (str (options/get :ns)))
-                           nams))
-        ]
+                           nams))]
     {:fn func-name
      :ns nams
      :in-ns? in-ns?
@@ -43,15 +42,14 @@
      :clj? clj?
      :file f
      :line line}))
-    
+
 (defn parse-ex [ex]
   (let [clj-parsed (iterate :cause (parse-exception ex))
         exception (first clj-parsed)
         causes (rest clj-parsed)]
     {:exception (assoc exception :trace-elems (map ex-item (:trace-elems exception)))
      :causes (for [cause causes :while cause]
-               (assoc cause :trimmed-elems (map ex-item (:trimmed-elems cause))))}
-    ))
+               (assoc cause :trimmed-elems (map ex-item (:trimmed-elems cause))))}))
 
 (defn wrap-exceptions [handler]
   (fn [request]
@@ -60,7 +58,7 @@
       (catch Exception e
         (.printStackTrace e)
         (let [content (if (options/dev-mode?)
-                        (try 
+                        (try
                           (defaults/stack-trace (parse-ex e))
                           (catch Throwable e
                             (statuses/get-page 500)))

@@ -7,7 +7,7 @@
 (declare ^:dynamic *cur-cookies*)
 (declare ^:dynamic *new-cookies*)
 
-(defn put! 
+(defn put!
   "Add a new cookie whose name is k and has the value v. If v is a string
   a cookie map is created with :path '/'. To set custom attributes, such as
   \"expires\", provide a map as v. Stores all keys as strings."
@@ -22,9 +22,9 @@
    If this is a signed cookie, use get-signed, otherwise the signature will not be
    checked."
   ([k] (get k nil))
-  ([k default] 
+  ([k default]
    (let [str-k (name k)]
-     (if-let [v (or (get-in @*new-cookies* [str-k :value]) 
+     (if-let [v (or (get-in @*new-cookies* [str-k :value])
                     (get-in *cur-cookies* [str-k :value]))]
        v
        default))))
@@ -39,10 +39,10 @@
   should be a secret that's user-wide, session-wide or site wide (worst)."
   [sign-key k v]
   (let [actual-v (if (map? v) (:value v) v)]
-    (put! k v) 
+    (put! k v)
     (put! (signed-name k)
           (let [signed-v (crypt/sha1-sign-hex sign-key actual-v)]
-            (if (map? v) ;; If previous value was a map with other attributes, 
+            (if (map? v) ;; If previous value was a map with other attributes,
               (assoc v :value signed-v) ;; Place the signed value in a similar map,
               signed-v))))) ;; Otherwise just signed value.
 
