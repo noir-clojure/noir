@@ -203,3 +203,7 @@
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args)]
     `(compojure-route (~action ~url ~destruct ~@body))))
+
+(defn custom-handler* [route func]
+  (let [[{:keys [action url fn-name]}] (parse-route [{} [route]] 'compojure.core/GET)]
+    (swap! noir-routes assoc (keyword fn-name) (eval `(~action ~url {params# :params} (~func params#))))))

@@ -119,6 +119,9 @@
   [handler opts]
   (routes handler
           (-> (apply routes (spec-routes))
+              (wrap-custom-middleware)
+              (cookie/wrap-noir-cookies)
+              (validation/wrap-noir-validation)
               (hiccup/wrap-base-url (options/get :base-url))
               (statuses/wrap-status-pages)
               (exception/wrap-exceptions)
