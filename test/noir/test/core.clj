@@ -142,6 +142,10 @@
            (resp/status 403
                         "not allowed"))
 
+(pre-route "/pre_with_args/:id" {{:keys [id]} :params}
+           (resp/status 403
+                        (str id " not allowed")))
+
 (post-route "/post-route" []
             (resp/status 403 "not allowed"))
 
@@ -159,7 +163,10 @@
       (has-body "not allowed"))
   (-> (send-request "/pre")
       (has-status 403)
-      (has-body "not allowed")))
+      (has-body "not allowed"))
+  (-> (send-request "/pre_with_args/1")
+      (has-status 403)
+      (has-body "1 not allowed")))
 
 (deftest compojure-route-test
   (-> (send-request "/compojure")
