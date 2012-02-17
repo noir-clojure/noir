@@ -61,7 +61,7 @@
   :ns - the root namepace of your project
   :jetty-options - any extra options you want to send to jetty like :ssl?
   :base-url - the root url to prepend to generated links and resources
-  :resource-root - an alternative name for the public folder
+  :resource-options - a map of options for the resources route (:root or :mime-types)
   :session-store - an alternate store for session handling
   :session-cookie-attrs - custom session cookie attributes"
   [port & [opts]]

@@ -1,7 +1,7 @@
 (ns noir.server.handler
   "Handler generation functions used by noir.server and other ring handler libraries."
   (:use [compojure.core :only [routes ANY]]
-        ring.middleware.reload-modified
+        ring.middleware.reload
         ring.middleware.flash)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
@@ -56,7 +56,7 @@
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
-    (wrap-reload-modified handler ["src"])
+    (wrap-reload handler ["src"])
     handler))
 
 (defn- wrap-custom-middleware [handler]
@@ -70,7 +70,8 @@
 
 (defn- spec-routes []
   (let [ws (wrappers-for :resources :catch-all)
-        resources (c-route/resources "/" {:root (options/get :resource-root "public")})
+        resource-opts (merge {:root "public"} (options/get :resource-options {}))
+        resources (c-route/resources "/" resource-opts)
         catch-all (ANY "*" [] {:status 404 :body nil})]
     [(try-wrap (:resources ws) resources)
      (try-wrap (:catch-all ws) catch-all)]))
