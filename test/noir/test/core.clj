@@ -7,7 +7,6 @@
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
             [noir.server :as server]
-            [noir.util.middleware :as middleware]
             [noir.session :as session]
             [noir.request :as request]
             [noir.options :as options]
@@ -126,7 +125,7 @@
   (is (thrown? Exception (parse-args '["/" '() 3])))
   (is (thrown? Exception (parse-args '[{} '() 3]))))
 
-(defpage "/utf" [] "ąčęė")
+;(defpage "/utf" [] "ąčęė")
 
 (deftest url-for-before-def
   (is (= "/one-arg/5" (url-for route-one-arg {:id 5}))))
@@ -249,16 +248,16 @@
   (-> (send-request "/wrap-route")
       (has-body "intercepted")))
 
-(deftest wrap-utf
-  (-> (send-request "/utf")
-      (has-content-type "text/html; charset=utf-8")
-      (has-body "ąčęė"))
-  ;;Technically this middleware is unnecessary now due to some changes in ring.
-  ;;but this provides a nice test for custom middleware.
-  (server/add-middleware middleware/wrap-utf-8)
-  (-> (send-request "/utf")
-      (has-content-type "text/html; charset=utf-8; charset=utf-8")
-      (has-body "ąčęė")))
+;(deftest wrap-utf
+;  (-> (send-request "/utf")
+;      (has-content-type "text/html; charset=utf-8")
+;      (has-body "ąčęė"))
+;  ;;Technically this middleware is unnecessary now due to some changes in ring.
+;  ;;but this provides a nice test for custom middleware.
+;  (server/add-middleware middleware/wrap-utf-8)
+;  (-> (send-request "/utf")
+;      (has-content-type "text/html; charset=utf-8; charset=utf-8")
+;      (has-body "ąčęė")))
 
 (deftest valid-emails
   (are [email] (vali/is-email? email)
@@ -282,3 +281,18 @@
        "test"
        "test.@domain.com"
        "test@com"))
+
+(defpage "/different/content-type" []
+  (resp/content-type "application/vcard+xml" (resp/xml (html [:vcards]))))
+
+(deftest different-content-type
+  (-> (send-request "/different/content-type")
+      (has-content-type "application/vcard+xml")
+      (has-body "<vcards />")))
+
+(defpage "/different/status" []
+  (resp/status 201 "Something was created"))
+
+(deftest different-header
+  (-> (send-request "/different/status")
+      (has-status 201)))
