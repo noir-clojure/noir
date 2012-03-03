@@ -281,3 +281,18 @@
        "test"
        "test.@domain.com"
        "test@com"))
+
+(defpage "/different/content-type" []
+  (resp/content-type "application/vcard+xml" (resp/xml (html [:vcards]))))
+
+(deftest different-content-type
+  (-> (send-request "/different/content-type")
+      (has-content-type "application/vcard+xml")
+      (has-body "<vcards />")))
+
+(defpage "/different/status" []
+  (resp/status 201 "Something was created"))
+
+(deftest different-header
+  (-> (send-request "/different/status")
+      (has-status 201)))
