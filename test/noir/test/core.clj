@@ -57,9 +57,8 @@
 
 (deftest flash-lifetime
   (with-noir
-    (session/flash-put! "noir")
-    (is (= "noir" (session/flash-get)))
-    (is (= nil (session/flash-get)))))
+    (session/flash-put! :test "noir")
+    (is (= "noir" (session/flash-get :test)))))
 
 (defpage "/test" {:keys [nme]}
   (str "Hello " nme))

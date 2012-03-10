@@ -1,3 +1,4 @@
+
 (ns noir.util.crypt
   "Simple functions for hashing strings and comparing them. Typically used for storing passwords."
   (:refer-clojure :exclude [compare])
@@ -9,7 +10,7 @@
   ([]
    (BCrypt/gensalt)))
 
-(defn encrypt 
+(defn encrypt
   "Encrypt the given string with a generated or supplied salt. Uses BCrypt for strong hashing."
   ;; generate a salt
   ([salt raw] (BCrypt/hashpw raw salt))
@@ -26,4 +27,3 @@
         secret (javax.crypto.spec.SecretKeySpec. (.getBytes sign-key), "HmacSHA1")]
     (.init mac secret)
     (apply str (map (partial format "%02x") (.doFinal mac (.getBytes v))))))
-

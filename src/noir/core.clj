@@ -26,7 +26,7 @@
 
 (defn- parse-fn-name [[cur :as all]]
   (let [[fn-name remaining] (if (and (symbol? cur)
-                                     (or (@route-funcs (keyword (name cur))) 
+                                     (or (@route-funcs (keyword (name cur)))
                                          (not (resolve cur))))
                               [cur (rest all)]
                               [nil all])]
@@ -34,7 +34,7 @@
 
 (defn- parse-route [[{:keys [fn-name] :as result} [cur :as all]] default-action]
   (let [cur (if (symbol? cur)
-              (try 
+              (try
                 (deref (resolve cur))
                 (catch Exception e
                   (throwf "Symbol given for route has no value")))
@@ -59,7 +59,7 @@
       (assoc :destruct cur)
       (assoc :body (rest all))))
 
-(defn ^{:skip-wiki true} parse-args 
+(defn ^{:skip-wiki true} parse-args
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
   [args & [default-action]]
   (-> args
@@ -68,7 +68,7 @@
       (parse-destruct-body)))
 
 (defn ^{:skip-wiki true} route->name
-  "Parses a set of route args into the keyword name for the route" 
+  "Parses a set of route args into the keyword name for the route"
   [route]
   (cond
     (keyword? route) route
@@ -106,7 +106,7 @@
      (html
        ~@body)))
 
-(defn ^{:skip-wiki true} route-arguments 
+(defn ^{:skip-wiki true} route-arguments
   "returns the list of route arguments in a route"
   [route]
   (let [args (re-seq #"/(:([^\/]+)|\*)" route)]
@@ -121,7 +121,7 @@
       (throwf "Missing route-args %s" (vec (filter #(not (contains? route-args %)) route-arg-names))))
     (reduce (fn [path [k v]]
               (if (= k :*)
-                (string/replace path "*" (str v)) 
+                (string/replace path "*" (str v))
                 (string/replace path (str k) (str v))))
             url
             route-args)))
@@ -170,7 +170,7 @@
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args 'compojure.core/ANY)
-        safe-url (if (vector? url) 
+        safe-url (if (vector? url)
                    (first url)
                    url)]
     `(swap! pre-routes assoc ~safe-url (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
@@ -203,3 +203,9 @@
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args)]
     `(compojure-route (~action ~url ~destruct ~@body))))
+
+(defn custom-handler* [route func]
+  (let [[{:keys [action url fn-name]}] (parse-route [{} [route]] 'compojure.core/GET)
+        fn-key (keyword fn-name)]
+    (swap! route-funcs assoc fn-key func)
+    (swap! noir-routes assoc fn-key (eval `(~action ~url {params# :params} (~func params#))))))

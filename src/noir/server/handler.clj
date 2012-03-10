@@ -1,11 +1,11 @@
 (ns noir.server.handler
   "Handler generation functions used by noir.server and other ring handler libraries."
   (:use [compojure.core :only [routes ANY]]
-        ring.middleware.reload-modified
+        ring.middleware.reload
         ring.middleware.flash)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
-            [hiccup.core :as hiccup]
+            [hiccup.middleware :as hiccup]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
@@ -56,14 +56,8 @@
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
-    (wrap-reload-modified handler ["src"])
+    (wrap-reload handler ["src"])
     handler))
-
-(defn- wrap-base-url [handler]
-  (let [url (options/get :base-url)]
-    (fn [req]
-      (binding [hiccup/*base-url* url]
-        (handler req)))))
 
 (defn- wrap-custom-middleware [handler]
   (reduce (fn [cur [func args]] (apply func cur args))
@@ -76,7 +70,8 @@
 
 (defn- spec-routes []
   (let [ws (wrappers-for :resources :catch-all)
-        resources (c-route/resources "/" {:root (options/get :resource-root "public")})
+        resource-opts (merge {:root "public"} (options/get :resource-options {}))
+        resources (c-route/resources "/" resource-opts)
         catch-all (ANY "*" [] {:status 404 :body nil})]
     [(try-wrap (:resources ws) resources)
      (try-wrap (:catch-all ws) catch-all)]))
@@ -109,7 +104,7 @@
   [handler opts]
   (binding [options/*options* (options/compile-options opts)]
     (-> handler
-        (wrap-base-url)
+        (hiccup/wrap-base-url (options/get :base-url))
         (session/wrap-noir-flash)
         (session/wrap-noir-session)
         (cookie/wrap-noir-cookies)
@@ -125,7 +120,10 @@
   [handler opts]
   (routes handler
           (-> (apply routes (spec-routes))
-              (wrap-base-url)
+              (wrap-custom-middleware)
+              (cookie/wrap-noir-cookies)
+              (validation/wrap-noir-validation)
+              (hiccup/wrap-base-url (options/get :base-url))
               (statuses/wrap-status-pages)
               (exception/wrap-exceptions)
               (options/wrap-options opts))))

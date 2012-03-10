@@ -5,7 +5,6 @@
         [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]]
         [ring.middleware.multipart-params])
   (:require [compojure.handler :as compojure]
-            [ring.adapter.jetty :as jetty]
             [noir.server.handler :as handler]))
 
 (defn gen-handler
@@ -49,7 +48,7 @@
   use for defpage, func is a ring middleware function, and args are any additional args
   to pass to the middleware function. You can wrap the resources and catch-all routes by
   supplying the routes :resources and :catch-all respectively:
-  
+
   (wrap-route :resources some-caching-middleware)"
   [route middleware & args]
   (apply handler/wrap-route route middleware args))
@@ -61,14 +60,18 @@
   :mode - either :dev or :prod
   :ns - the root namepace of your project
   :jetty-options - any extra options you want to send to jetty like :ssl?
-  :base-url - the root url to prepend to generated links and resources 
-  :resource-root - an alternative name for the public folder
+  :base-url - the root url to prepend to generated links and resources
+  :resource-options - a map of options for the resources route (:root or :mime-types)
   :session-store - an alternate store for session handling
   :session-cookie-attrs - custom session cookie attributes"
   [port & [opts]]
+  ;; to allow for jetty to be excluded as a dependency, it is included
+  ;; here inline.
+  (require 'ring.adapter.jetty)
   (println "Starting server...")
-  (let [jetty-opts (merge {:port port :join? false} (:jetty-options opts))
-        server (jetty/run-jetty (gen-handler opts) jetty-opts)]
+  (let [run-fn (resolve 'ring.adapter.jetty/run-jetty) ;; force runtime resolution of jetty
+        jetty-opts (merge {:port port :join? false} (:jetty-options opts))
+        server (run-fn (gen-handler opts) jetty-opts)]
     (println (str "Server started on port [" port "]."))
     (println (str "You can view the site at http://localhost:" port))
     server))
