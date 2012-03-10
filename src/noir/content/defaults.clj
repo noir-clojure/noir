@@ -1,4 +1,4 @@
-(ns 
+(ns
   #^{:skip-wiki true}
   noir.content.defaults
   (:use noir.core
@@ -29,8 +29,7 @@
   (min-noir-layout
     [:div#not-found
      [:h1 "We seem to have lost that one."]
-     [:p "Since we couldn't find the page you were looking for, check to make sure the address is correct."]]
-    ))
+     [:p "Since we couldn't find the page you were looking for, check to make sure the address is correct."]]))
 
 (defpartial exception-item [{nams :ns in-ns? :in-ns? fq :fully-qualified f :file line :line :as ex}]
       [:tr {:class (when in-ns?
@@ -48,14 +47,11 @@
                    (try
                      [:h3 "Caused by: " (:class cause) " - " (:message cause)]
                      [:table (map exception-item (:trimmed-elems cause))]
-                     (catch Throwable e))])]
-              ))
+                     (catch Throwable e))])]))
 
 (defpartial internal-error []
   (min-noir-layout
     [:div#not-found
      [:h1 "Something very bad has happened."]
-     [:p "We've dispatched a team of highly trained gnomes to take 
+     [:p "We've dispatched a team of highly trained gnomes to take
          care of the problem."]]))
-
-

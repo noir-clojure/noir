@@ -7,7 +7,8 @@
 (defonce noir-routes (atom {}))
 (defonce route-funcs (atom {}))
 (defonce pre-routes (atom (sorted-map)))
-(defonce post-routes (atom (list)))
+(defonce post-routes (atom []))
+(defonce compojure-routes (atom []))
 
 (defn- keyword->symbol [namesp kw]
   (symbol namesp (string/upper-case (name kw))))
@@ -25,7 +26,7 @@
 
 (defn- parse-fn-name [[cur :as all]]
   (let [[fn-name remaining] (if (and (symbol? cur)
-                                     (or (@route-funcs (keyword (name cur))) 
+                                     (or (@route-funcs (keyword (name cur)))
                                          (not (resolve cur))))
                               [cur (rest all)]
                               [nil all])]
@@ -33,7 +34,7 @@
 
 (defn- parse-route [[{:keys [fn-name] :as result} [cur :as all]] default-action]
   (let [cur (if (symbol? cur)
-              (try 
+              (try
                 (deref (resolve cur))
                 (catch Exception e
                   (throwf "Symbol given for route has no value")))
@@ -58,13 +59,22 @@
       (assoc :destruct cur)
       (assoc :body (rest all))))
 
-(defn ^{:skip-wiki true} parse-args 
+(defn ^{:skip-wiki true} parse-args
   "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
   [args & [default-action]]
   (-> args
       (parse-fn-name)
       (parse-route (or default-action 'compojure.core/GET))
       (parse-destruct-body)))
+
+(defn ^{:skip-wiki true} route->name
+  "Parses a set of route args into the keyword name for the route"
+  [route]
+  (cond
+    (keyword? route) route
+    (fn? route) (keyword (:name (meta route)))
+    :else (let [res (first (parse-route [{} [route]] 'compojure.core/GET))]
+            (keyword (:fn-name res)))))
 
 (defmacro defpage
   "Adds a route to the server whose content is the the result of evaluating the body.
@@ -96,7 +106,7 @@
      (html
        ~@body)))
 
-(defn ^{:skip-wiki true} route-arguments 
+(defn ^{:skip-wiki true} route-arguments
   "returns the list of route arguments in a route"
   [route]
   (let [args (re-seq #"/(:([^\/]+)|\*)" route)]
@@ -111,7 +121,7 @@
       (throwf "Missing route-args %s" (vec (filter #(not (contains? route-args %)) route-arg-names))))
     (reduce (fn [path [k v]]
               (if (= k :*)
-                (string/replace path "*" (str v)) 
+                (string/replace path "*" (str v))
                 (string/replace path (str k) (str v))))
             url
             route-args)))
@@ -146,8 +156,8 @@
   [route & [params]]
   (if (fn? route)
     (route params)
-    (let [[{fn-name :fn-name :as res}] (parse-route [{} [route]] 'compojure.core/GET)
-          func (get @route-funcs (keyword fn-name))]
+    (let [rname (route->name route)
+          func (get @route-funcs rname)]
       (func params))))
 
 (defmacro pre-route
@@ -160,7 +170,7 @@
   (pre-route '/admin/*' {} (when-not (is-admin?) (redirect '/login')))"
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args 'compojure.core/ANY)
-        safe-url (if (vector? url) 
+        safe-url (if (vector? url)
                    (first url)
                    url)]
     `(swap! pre-routes assoc ~safe-url (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
@@ -171,8 +181,8 @@
   evaluated after those created by defpage and before the generic catch-all and
   resources routes."
   [& args]
-  (let [{:keys [action destruct url body]} (parse-args args)]
-    `(swap! post-routes conj (~action ~url {:as request#} ((fn [~destruct] ~@body) request#)))))
+  (let [{:keys [action destruct url body fn-name]} (parse-args args)]
+    `(swap! post-routes conj [~(keyword fn-name) (~action ~url {:as request#} ((fn [~destruct] ~@body) request#))])))
 
 (defn compojure-route
   "Adds a compojure route fn to the end of the route table. These routes are queried after
@@ -180,7 +190,7 @@
 
   These are primarily used to integrate generated routes from other libs into Noir."
   [compojure-func]
-  (swap! post-routes conj compojure-func))
+  (swap! compojure-routes conj compojure-func))
 
 (defmacro custom-handler
   "Adds a handler to the end of the route table. This is equivalent to writing
@@ -193,3 +203,9 @@
   [& args]
   (let [{:keys [action destruct url body]} (parse-args args)]
     `(compojure-route (~action ~url ~destruct ~@body))))
+
+(defn custom-handler* [route func]
+  (let [[{:keys [action url fn-name]}] (parse-route [{} [route]] 'compojure.core/GET)
+        fn-key (keyword fn-name)]
+    (swap! route-funcs assoc fn-key func)
+    (swap! noir-routes assoc fn-key (eval `(~action ~url {params# :params} (~func params#))))))
