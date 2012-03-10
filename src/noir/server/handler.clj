@@ -4,7 +4,6 @@
         ring.middleware.reload-modified)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
-            [hiccup.core :as hiccup]
             [hiccup.middleware :as hiccup-middleware]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
