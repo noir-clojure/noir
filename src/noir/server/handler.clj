@@ -5,6 +5,7 @@
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
             [hiccup.core :as hiccup]
+            [hiccup.middleware :as hiccup-middleware]
             [noir.core :as noir]
             [noir.content.defaults :as defaults]
             [noir.cookies :as cookie]
@@ -28,9 +29,7 @@
 
 (defn- wrap-base-url [handler]
   (let [url (options/get :base-url)]
-    (fn [req]
-      (binding [hiccup/*base-url* url]
-        (handler req)))))
+    (hiccup-middleware/wrap-base-url handler url)))
 
 (defn- wrap-custom-middleware [handler]
   (reduce (fn [cur [func args]] (apply func cur args))

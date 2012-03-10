@@ -3,7 +3,7 @@
   noir.content.defaults
   (:use noir.core
         hiccup.core
-        hiccup.page-helpers))
+        hiccup.page))
 
 (defpartial noir-layout [& content]
             (html5

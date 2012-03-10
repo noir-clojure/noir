@@ -3,7 +3,7 @@
   noir.content.getting-started
   (:use noir.core
         noir.content.defaults
-        hiccup.page-helpers))
+        hiccup.page))
 
 (def header-links [{:url "http://www.webnoir.org/tutorials" :text "Tutorials"}
                    {:url "http://groups.google.com/group/clj-noir" :text "Google Group"}
