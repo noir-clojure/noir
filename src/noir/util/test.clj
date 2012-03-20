@@ -7,7 +7,7 @@
             [noir.cookies :as cookies]
             [noir.options :as options]))
 
-(def content-types {:json "application/json"
+(def content-types {:json "application/json; charset=utf-8"
                     :html "text/html"})
 
 (defmacro with-noir
