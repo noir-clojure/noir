@@ -2,12 +2,11 @@
   (:use [noir.core]
         [compojure.core]
         [hiccup.core :only [html]]
-        [hiccup.page-helpers :only [link-to]]
+        [hiccup.element :only [link-to]]
         [noir.util.test])
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
             [noir.server :as server]
-            [noir.util.middleware :as middleware]
             [noir.session :as session]
             [noir.request :as request]
             [noir.options :as options]
@@ -255,17 +254,6 @@
 
   (-> (send-request "/wrap-route")
       (has-body "intercepted")))
-
-(deftest wrap-utf
-  (-> (send-request "/utf")
-      (has-content-type "text/html; charset=utf-8")
-      (has-body "ąčęė"))
-  ;;Technically this middleware is unnecessary now due to some changes in ring.
-  ;;but this provides a nice test for custom middleware.
-  (server/add-middleware middleware/wrap-utf-8)
-  (-> (send-request "/utf")
-      (has-content-type "text/html; charset=utf-8; charset=utf-8")
-      (has-body "ąčęė")))
 
 (deftest valid-emails
   (are [email] (vali/is-email? email)

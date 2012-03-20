@@ -5,6 +5,6 @@
                  [org.clojure/tools.namespace "0.1.0"]
                  [cheshire "2.1.0"]
                  [ring "1.0.2"]
-                 [hiccup "0.3.8"]
+                 [hiccup "1.0.0-beta1"]
                  [clj-stacktrace "0.2.4"]
                  [org.mindrot/jbcrypt "0.3m"]])
