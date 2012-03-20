@@ -3,6 +3,7 @@
   noir.content.getting-started
   (:use noir.core
         noir.content.defaults
+        hiccup.element
         hiccup.page))
 
 (def header-links [{:url "http://www.webnoir.org/tutorials" :text "Tutorials"}

@@ -40,6 +40,15 @@
   [k]
   (clojure.core/swap! *noir-session* dissoc k))
 
+(defn get!
+  "Destructive get from the session. This returns the current value of the key
+  and then removes it from the session."
+  ([k] (get! k nil))
+  ([k default]
+   (let [cur (get k default)]
+     (remove! k)
+     cur)))
+
 (defn noir-session [handler]
   (fn [request]
     (binding [*noir-session* (atom (:session request))]

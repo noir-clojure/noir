@@ -4,6 +4,7 @@
 * BREAKING CHANGE: clj-json has been replaced with cheshire.
 * BREAKING CHANGE: noir.util.middleware was removed as wrap-utf8 is done by default in ring.
 * BREAKING CHANGE: noir.util.s3 has been removed. See https://github.com/weavejester/clj-aws-s3 for a replacement.
+* Added noir.session/get! to have a destructive get like the old flashes
 * Added noir.server/wrap-route to wrap middleware around specific routes
 * Added noir.core/custom-handler* for adding dynamic route functions to the routing table.
 * Added noir.util.test/send-request-map for sending full ring maps
