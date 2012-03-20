@@ -2,7 +2,7 @@
   (:use [noir.core]
         [compojure.core]
         [hiccup.core :only [html]]
-        [hiccup.page-helpers :only [link-to]]
+        [hiccup.element :only [link-to]]
         [noir.util.test])
   (:use [clojure.test])
   (:require [noir.util.crypt :as crypt]
