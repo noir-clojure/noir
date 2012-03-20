@@ -204,7 +204,15 @@
   (let [{:keys [action destruct url body]} (parse-args args)]
     `(compojure-route (~action ~url ~destruct ~@body))))
 
-(defn custom-handler* [route func]
+(defn custom-handler*
+  "Adds a handler to the end of the route table. This is equivalent to writing
+  a compojure route using noir's [:method route] syntax, but allows functions
+  to be created dynamically:
+
+  (custom-handler* [:post \"/login\"] (fn [params] (println req)))
+
+  These are primarily used to interface with other dynamic handler generating libraries"
+  [route func]
   (let [[{:keys [action url fn-name]}] (parse-route [{} [route]] 'compojure.core/GET)
         fn-key (keyword fn-name)]
     (swap! route-funcs assoc fn-key func)

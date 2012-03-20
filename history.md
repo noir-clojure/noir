@@ -1,3 +1,16 @@
+##Changes for 1.3.0-beta1
+* BREAKING CHANGE: flashes now last the length of one non-resource request
+* BREAKING CHANGE: switched to the latest hiccup: form-helpers and page-helpers have been split apart. See http://github.com/weavejester/hiccup for more details.
+* BREAKING CHANGE: clj-json has been replaced with cheshire.
+* BREAKING CHANGE: noir.util.middleware was removed as wrap-utf8 is done by default in ring.
+* BREAKING CHANGE: noir.util.s3 has been removed. See https://github.com/weavejester/clj-aws-s3 for a replacement.
+* Added noir.server/wrap-route to wrap middleware around specific routes
+* Added noir.core/custom-handler* for adding dynamic route functions to the routing table.
+* Added noir.util.test/send-request-map for sending full ring maps
+* Refactored noir.server so that the jetty dependency can be excluded.
+* Refactored noir.response/* so that all functions compose
+* Fixed all generated content-types are utf-8
+
 ##Changes for 1.2.2
 * Added an argless form of (noir.validation/errors?) that returns all errors
 * Added the ability to define routes with vars
