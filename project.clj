@@ -1,4 +1,4 @@
-(defproject noir "1.3.0-beta2"
+(defproject noir "1.3.0-beta3"
   :description "Noir - a clojure web framework"
   :url "http://webnoir.org"
   :codox {:exclude [noir.exception noir.content.defaults

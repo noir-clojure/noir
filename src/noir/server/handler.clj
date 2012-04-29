@@ -91,8 +91,8 @@
           ;; result of a modification are evaluated on the first reload.
           ((pack-routes) request))
         (pack-routes))
-      (wrap-custom-middleware)
-      (request/wrap-request-map))))
+      (request/wrap-request-map)
+      (wrap-custom-middleware))))
 
 (defn add-custom-middleware
   "Add a middleware function to all noir handlers."
