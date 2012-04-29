@@ -8,6 +8,6 @@
                  [org.clojure/tools.namespace "0.1.0"]
                  [cheshire "3.0.0"]
                  [ring "1.0.2"]
-                 [hiccup "1.0.0-beta1"]
+                 [hiccup "1.0.0-RC1"]
                  [clj-stacktrace "0.2.4"]
                  [org.mindrot/jbcrypt "0.3m"]])
