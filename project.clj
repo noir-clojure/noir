@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [compojure "1.0.1"]
                  [org.clojure/tools.namespace "0.1.0"]
-                 [cheshire "3.0.0"]
+                 [cheshire "4.0.0"]
                  [ring "1.0.2"]
                  [hiccup "1.0.0-beta1"]
                  [clj-stacktrace "0.2.4"]
