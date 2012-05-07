@@ -47,12 +47,6 @@
        (:filename m)))
 
 
-(defn greater-than-zero?
-  "Returns true if the string represents a positive number."
-  [v]
-  (and (not (empty? v))
-   (> (Long/parseLong v) 0)))
-
 (defn valid-number?
   "Returns true if the string can be cast to a Long"
   [v]
@@ -61,6 +55,14 @@
     true
     (catch Exception e
       false)))
+
+
+(defn greater-than-zero?
+  "Returns true if the string represents a positive number."
+  [v]
+  (and (valid-number? v)
+       (> (Long/parseLong v) 0)))
+
 
 (declare ^:dynamic *errors*)
 
