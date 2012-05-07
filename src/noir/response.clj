@@ -63,6 +63,5 @@
   "Wraps the response in the `application/clojure` content-type
    and calls pr-str on the Clojure data stuctures passed in."
   [data]
-  (response/content-type
-   "application/clojure; charset=utf-8"
-   (pr-str data)))
+  (content-type "application/clojure; charset=utf-8"
+                (pr-str data)))
