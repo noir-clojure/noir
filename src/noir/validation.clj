@@ -39,6 +39,22 @@
   [v]
   (re-matches #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" v))
 
+
+(defn valid-file?
+  "Returns true if a valid file was supplied"
+  [m]
+  (and (> (:size m) 0)
+       (:filename m)))
+
+
+(defn greater-than-zero?
+  "Returns true if the string represents a positive number."
+  [v]
+  (and (not (empty? v))
+   (> (Long/parseLong v) 0)))
+
+
+
 (declare ^:dynamic *errors*)
 
 ;;errors and rules
