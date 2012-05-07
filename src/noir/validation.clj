@@ -53,7 +53,14 @@
   (and (not (empty? v))
    (> (Long/parseLong v) 0)))
 
-
+(defn valid-number?
+  "Returns true if the string can be cast to a Long"
+  [v]
+  (try
+    (Long/parseLong v)
+    true
+    (catch Exception e
+      false)))
 
 (declare ^:dynamic *errors*)
 
