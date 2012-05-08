@@ -2,7 +2,8 @@
   "Functions to work with partials and pages."
   (:use hiccup.core
         compojure.core)
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [clojure.tools.macro :as macro]))
 
 (defonce noir-routes (atom {}))
 (defonce route-funcs (atom {}))
@@ -100,11 +101,13 @@
        (swap! noir-routes assoc ~(keyword fn-name) (~action ~url {params# :params} (~fn-name params#))))))
 
 (defmacro defpartial
-  "Create a function that returns html using hiccup. The function is callable with the given name."
-  [fname params & body]
-  `(defn ~fname ~params
-     (html
-       ~@body)))
+  "Create a function that returns html using hiccup. The function is callable with the given name. Can optionally include a docstring or metadata map, like a normal function declaration."
+  [fname & args]
+  (let [[fname params] (macro/name-with-attributes fname args)
+        body (rest (filter vector? args))]
+    `(defn ~fname ~@params
+       (html
+        ~@body))))
 
 (defn ^{:skip-wiki true} route-arguments
   "returns the list of route arguments in a route"
