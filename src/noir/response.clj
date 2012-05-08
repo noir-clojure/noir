@@ -68,7 +68,8 @@
    :headers {"Location" (options/resolve-url url)}
    :body ""})
 
-(def #^{:doc "Alias to temporary-redirect"}
+(def #^{:doc "A header temporary redirect to a different url.
+              Alias to `temporary-redirect`."}
   redirect temporary-redirect)
 
 (defn empty
