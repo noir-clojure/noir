@@ -57,12 +57,18 @@
       false)))
 
 
-(defn greater-than-zero?
-  "Returns true if the string represents a positive number."
-  [v]
+(defn greater-than?
+  "Returns true if the string represents a number > given."
+  [v n]
   (and (valid-number? v)
-       (> (Long/parseLong v) 0)))
+       (> (Long/parseLong v) n)))
 
+
+(defn less-than?
+  "Returns true if the string represents a number < given."
+  [v n]
+  (and (valid-number? v)
+       (> (Long/parseLong v) n)))
 
 (declare ^:dynamic *errors*)
 
