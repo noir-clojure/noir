@@ -46,12 +46,30 @@
   [code content]
   (assoc (->map content) :status code))
 
-(defn redirect
-  "A header redirect to a different url"
+(defn permanent-redirect
+  "A header permanent redirect to a different url"
   [url]
-  {:status 302
+  {:status 301
    :headers {"Location" (options/resolve-url url)}
    :body ""})
+
+(defn see-other-redirect
+  "A header see other redirect to a different url.
+   Used mainly after a POST/PUT/DELETE to redirect to a new resource."
+  [url]
+  {:status 303
+   :headers {"Location" (options/resolve-url url)}
+   :body ""})
+
+(defn temporary-redirect
+  "A header temporary redirect to a different url"
+  [url]
+  {:status 307
+   :headers {"Location" (options/resolve-url url)}
+   :body ""})
+
+(def #^{:doc "Alias to temporary-redirect"}
+  redirect temporary-redirect)
 
 (defn empty
   "Return a successful, but completely empty response"
