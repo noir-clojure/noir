@@ -64,7 +64,7 @@
 (defn temporary-redirect
   "A header temporary redirect to a different url"
   [url]
-  {:status 307
+  {:status 302
    :headers {"Location" (options/resolve-url url)}
    :body ""})
 
