@@ -163,7 +163,7 @@
 (defmacro pre-route
   "Adds a route to the beginning of the route table and passes the entire request
   to be destructured and used in the body. These routes are the only ones to make
-  an ordering gaurantee. They will always be in order of ascending specificity (e.g. /* ,
+  an ordering guarantee. They will always be in order of ascending specificity (e.g. /* ,
   /admin/* , /admin/user/*) Pre-routes are usually used for filtering, like redirecting
   a section based on privileges:
 
