@@ -177,7 +177,7 @@
 
 (defmacro post-route
   "Adds a route to the end of the route table and passes the entire request to
-  be desctructured and used in the body. These routes are guaranteed to be
+  be destructured and used in the body. These routes are guaranteed to be
   evaluated after those created by defpage and before the generic catch-all and
   resources routes."
   [& args]
