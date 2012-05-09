@@ -60,7 +60,7 @@
       (assoc :body (rest all))))
 
 (defn ^{:skip-wiki true} parse-args
-  "parses the arguments to defpage. Returns a map containing the keys :name :action :url :destruct :body"
+  "parses the arguments to defpage. Returns a map containing the keys :fn-name :action :url :destruct :body"
   [args & [default-action]]
   (-> args
       (parse-fn-name)
