@@ -5,7 +5,7 @@
                     noir.content.getting-started]}
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [compojure "1.0.4"]
-                 [org.clojure/tools.namespace "0.1.0"]
+                 [bultitude "0.1.5"]
                  [cheshire "4.0.0"]
                  [ring "1.0.2"]
                  [hiccup "1.0.0"]

@@ -2,7 +2,8 @@
   "A collection of functions to handle Noir's server and add middleware to the stack."
   (:use compojure.core
         [clojure.java.io :only [file]]
-        [clojure.tools.namespace :only [find-namespaces-in-dir find-namespaces-on-classpath]]
+        [clojure.string :only [join]]
+        [bultitude.core :only [namespaces-on-classpath]]
         [ring.middleware.multipart-params])
   (:require [compojure.handler :as compojure]
             [noir.server.handler :as handler]))
@@ -19,22 +20,19 @@
       (wrap-multipart-params)))
 
 (defn load-views
-  "Require all the namespaces in the given dir so that the pages are loaded
-  by the server."
+  "Require all the namespaces in the given dirs so that the pages are loaded
+   by the server."
   [& dirs]
-  (doseq [dir dirs
-          n (find-namespaces-in-dir (file dir))]
-    (require n)))
+  (doseq [f (namespaces-on-classpath :classpath (map file dirs))]
+    (require f)))
 
 (defn load-views-ns
   "Require all the namespaces prefixed by the namespace symbol given so that the pages
   are loaded by the server."
   [& ns-syms]
-  (doseq [ns-sym ns-syms
-          n (find-namespaces-on-classpath)
-          :let [pattern (re-pattern (name ns-sym))]
-          :when (re-seq pattern (name n))]
-    (require n)))
+  (doseq [sym ns-syms
+          f (namespaces-on-classpath :prefix (name sym))]
+    (require f)))
 
 (defn add-middleware
   "Add a middleware function to the noir server. Func is a standard ring middleware
