@@ -17,7 +17,7 @@
       (handler/wrap-noir-middleware opts)
       (handler/wrap-spec-routes opts)
       (compojure/api)
-      (wrap-multipart-params)))
+      (wrap-multipart-params opts)))
 
 (defn load-views
   "Require all the namespaces in the given dirs so that the pages are loaded
