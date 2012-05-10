@@ -46,31 +46,32 @@
   [code content]
   (assoc (->map content) :status code))
 
-(defn permanent-redirect
-  "A header permanent redirect to a different url"
-  [url]
-  {:status 301
+(defn redirect
+  "A header redirect to a different URI. If given one argument,
+   returns a 302 Found redirect. If given two arguments, the
+   second argument should be a keyword indicating which redirect
+   status to use. Choices are:
+
+   :permanent    -- A 301 permanent redirect.
+   :found        -- A 302 found redirect (default).
+   :see-other    -- A 303 see other redirect.
+   :not-modified -- A 304 not modified redirect.
+   :proxy        -- A 305 proxy redirect.
+   :temporary    -- A 307 temporary redirect.
+
+   To see what these redirects are for in detail, visit
+   http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3"
+  [url & [type]]
+  {:status (case type
+             :permanent 301
+             :found 302
+             :see-other 303
+             :not-modified 304
+             :proxy 305
+             :temporary 307
+             302)
    :headers {"Location" (options/resolve-url url)}
    :body ""})
-
-(defn see-other-redirect
-  "A header see other redirect to a different url.
-   Used mainly after a POST/PUT/DELETE to redirect to a new resource."
-  [url]
-  {:status 303
-   :headers {"Location" (options/resolve-url url)}
-   :body ""})
-
-(defn temporary-redirect
-  "A header temporary redirect to a different url"
-  [url]
-  {:status 302
-   :headers {"Location" (options/resolve-url url)}
-   :body ""})
-
-(def #^{:doc "A header temporary redirect to a different url.
-              Alias to `temporary-redirect`."}
-  redirect temporary-redirect)
 
 (defn empty
   "Return a successful, but completely empty response"
