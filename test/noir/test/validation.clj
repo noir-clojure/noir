@@ -16,3 +16,10 @@
     (vali/set-error :a "blah")
     (vali/set-error :b "cool")
     (is (= (set (vali/get-errors)) (set ["blah" "cool"])))))
+
+(deftest is-email-case-insensitive
+  (with-noir
+   (is (vali/is-email? "me@here.com"))
+   (is (vali/is-email? "Me@here.com"))
+   (is (vali/is-email? "me@Here.coM"))
+   (is (vali/is-email? "ME@HERE.COM"))))
