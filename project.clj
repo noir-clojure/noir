@@ -10,4 +10,5 @@
                  [ring "1.0.2"]
                  [hiccup "1.0.0-beta1"]
                  [clj-stacktrace "0.2.4"]
-                 [org.mindrot/jbcrypt "0.3m"]])
+                 [org.mindrot/jbcrypt "0.3m"]
+                 [org.clojure/tools.macro "0.1.1"]])
