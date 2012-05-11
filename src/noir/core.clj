@@ -104,8 +104,7 @@
   "Create a function that returns html using hiccup. The function is callable with the given name. Can optionally include a docstring or metadata map, like a normal function declaration."
   [fname & args]
   (let [[fname args] (macro/name-with-attributes fname args)
-        params (first args)
-        body (rest args)]
+        [params & body] args]
     `(defn ~fname ~params
        (html
         ~@body))))
