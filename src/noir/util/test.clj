@@ -1,7 +1,8 @@
 (ns noir.util.test
   "A set of utilities for testing a Noir project"
   (:use clojure.test)
-  (:require [noir.server :as server]
+  (:require [ring.mock.request :as ring-request]
+            [noir.server :as server]
             [noir.session :as session]
             [noir.validation :as vali]
             [noir.cookies :as cookies]
@@ -45,12 +46,20 @@
                        [:get route])]
     {:uri uri :request-method method :params params}))
 
+(defn- populate-headers 
+  [request headers]
+  (if (empty? headers)
+    request
+    (reduce (fn [rq [k v]] 
+              (ring-request/header rq k v)) request headers)))
+
 (defn send-request
   "Send a request to the Noir handler. Unlike with-noir, this will run
   the request within the context of all middleware."
-  [route & [params]]
-  (let [handler (server/gen-handler options/*options*)]
-    (handler (make-request route params))))
+  [route & [params headers-map]]
+    (let [handler (server/gen-handler options/*options*)
+          request (populate-headers (make-request route params) headers-map)]
+      (handler request)))
 
 (defn send-request-map
   "Send a ring-request map to the noir handler."
