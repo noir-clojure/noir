@@ -54,6 +54,12 @@
         (has-content-type (content-types :json))
         (has-body "{\"noir\":\"web\"}"))))
 
+(deftest json-resp-custom-type
+  (with-noir
+    (-> (resp/json {:noir (java.awt.Color. 1 2 3)})
+        (has-content-type (content-types :json))
+        (has-body "{\"noir\":\"java.awt.Color[r=1,g=2,b=3]\"}"))))
+
 (deftest flash-lifetime
   (with-noir
     (session/flash-put! :test "noir")
