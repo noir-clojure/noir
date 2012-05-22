@@ -65,10 +65,10 @@
    If optional details? arg is truthy, show noir-routes and route-funcs too."
   [& details?]
   (let [print-func (if details? pprint (comp pprint sort keys))]
-  (println "== Pre-$outes ==")
+  (println "== Pre-Routes ==")
   (print-func @noir.core/pre-routes)
   
-  (println "== Routes  and Funcs ==")
+  (println "== Routes and Funcs ==")
   (print-func (merge-with vector @noir.core/noir-routes  @noir.core/route-funcs))
   
   (println "== Post-Routes ==")
