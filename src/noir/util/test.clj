@@ -1,6 +1,7 @@
 (ns noir.util.test
   "A set of utilities for testing a Noir project"
-  (:use clojure.test)
+  (:use clojure.test
+        [clojure.pprint :only [pprint]])
   (:require [noir.server :as server]
             [noir.session :as session]
             [noir.validation :as vali]
@@ -57,3 +58,27 @@
   [ring-req]
   (let [handler (server/gen-handler options/*options*)]
     (handler ring-req)))
+
+
+(defn print-state
+  "Print the state of the noir server's routes/middleware/wrappers.
+   If optional details? arg is truthy, show noir-routes and route-funcs too."
+  [& details?]
+  (let [print-func (if details? pprint (comp pprint sort keys))]
+  (println "== Pre-$outes ==")
+  (print-func @noir.core/pre-routes)
+  
+  (println "== Routes  and Funcs ==")
+  (print-func (merge-with vector @noir.core/noir-routes  @noir.core/route-funcs))
+  
+  (println "== Post-Routes ==")
+  (pprint @noir.core/post-routes)
+  
+  (println "== Compojure-Routes ==")
+  (pprint @noir.core/compojure-routes)
+  
+  (println "== Middleware ==")
+  (pprint @noir.server.handler/middleware)
+  
+  (println "== Wrappers ==")
+  (pprint @noir.server.handler/wrappers)))
