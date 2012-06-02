@@ -331,7 +331,24 @@
                             ((session/noir-session
                               #(assoc % :session (dissoc (:session %) :foo)))
                              base-map))
-                           :foo))))))
+                           :foo))))
+    ;; dissocing one key doesn't affect any others
+    (let [base-map (assoc base-map :session {:foo "bar" :quuz "auugh"})
+          part-dissoc (:session
+                       ((session/noir-session
+                         #(assoc % :session (dissoc (:session %) :foo)))
+                        base-map))]
+      (is (not (contains? part-dissoc :foo)))
+      (is (= "auugh" (:quuz  part-dissoc)))
+      ;; changing one key doesn't affect any others
+      (let [part-change (:session
+                         ((session/noir-session
+                           #(assoc-in % [:session :foo] "baz"))
+                          base-map))]
+        (is (= "baz" (:foo part-change)))
+        (is (= "auugh" (:quuz  part-change)))))))
+
+
       
 
 
