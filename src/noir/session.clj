@@ -50,11 +50,24 @@
      cur)))
 
 (defn noir-session [handler]
+   "Store noir session keys in a :noir map, because other middleware that
+   expects pure functions may delete keys, and simply merging won't work.
+   Ring takes (not (contains? response :session) to mean: don't update session.
+   Ring takes (nil? (:session resonse) to mean: delete the session.
+   Because noir-session mutates :session, it needs to duplicate ring/wrap-session
+   functionality to handle these cases."
   (fn [request]
-    (binding [*noir-session* (atom (:session request))]
+    (binding [*noir-session* (atom (get-in request [:session :noir] {}))]
       (remove! :_flash)
       (when-let [resp (handler request)]
-        (assoc resp :session (merge @*noir-session* (:session resp)))))))
+        (if (=  (get-in request [:session :noir] {})  @*noir-session*)
+          resp
+          (if (contains? resp :session)
+            (if (nil? (:session resp))
+              resp
+              (assoc-in resp [:session :noir] @*noir-session*))
+            (assoc resp :session (assoc (:session request) :noir @*noir-session*))))))))
+        
 
 (defn assoc-if [m k v]
   (if (not (nil? v))
