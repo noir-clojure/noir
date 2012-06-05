@@ -297,3 +297,58 @@
 (deftest different-header
   (-> (send-request "/different/status")
       (has-status 201)))
+
+
+(deftest session
+  (with-noir
+    (session/put! :noir3 "woo")
+    (is (= "woo" (session/get :noir3)))
+    (is (nil? (session/get :noir4)))
+    (is (= "noir" (session/get :noir4 "noir")))))
+
+;;; regresssion tests, assure noir-session works with middleware like friend
+;;; which expects ring requests/responses to be pure functions
+
+(deftest noir-session
+  (let [base-map {:uri "/foo" :request-method :get }]
+    ;; put session value in
+    (is (= "bar" (get-in ((session/noir-session
+                           #(assoc-in % [:session :foo] "bar"))
+                          base-map)
+                         [:session :foo])))
+    (let [base-map (assoc base-map :session {:foo "bar"})]
+      ;; pass session value through
+      (is (= "bar" (get-in ((session/noir-session identity)
+                            base-map)
+                           [:session :foo])))
+      ;; change session value
+      (is  (= "baz" (get-in ((session/noir-session
+                              #(assoc-in % [:session :foo] "baz"))
+                             base-map)
+                            [:session :foo])))
+      ;; dissoc session value
+      (is  (not (contains? (:session
+                            ((session/noir-session
+                              #(assoc % :session (dissoc (:session %) :foo)))
+                             base-map))
+                           :foo))))
+    ;; dissocing one key doesn't affect any others
+    (let [base-map (assoc base-map :session {:foo "bar" :quuz "auugh"})
+          part-dissoc (:session
+                       ((session/noir-session
+                         #(assoc % :session (dissoc (:session %) :foo)))
+                        base-map))]
+      (is (not (contains? part-dissoc :foo)))
+      (is (= "auugh" (:quuz  part-dissoc)))
+      ;; changing one key doesn't affect any others
+      (let [part-change (:session
+                         ((session/noir-session
+                           #(assoc-in % [:session :foo] "baz"))
+                          base-map))]
+        (is (= "baz" (:foo part-change)))
+        (is (= "auugh" (:quuz  part-change)))))))
+
+
+      
+
+
