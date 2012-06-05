@@ -346,7 +346,18 @@
                            #(assoc-in % [:session :foo] "baz"))
                           base-map))]
         (is (= "baz" (:foo part-change)))
-        (is (= "auugh" (:quuz  part-change)))))))
+        (is (= "auugh" (:quuz  part-change)))))
+    ;; delete whole session.
+    ;; ring takes nil to mean delete session, so it must get passed through
+    (is (nil?  (:session ((session/noir-session
+                           #(assoc % :session nil))
+                          base-map))))
+    ;; make sure the whole session goes away and stays away if deleted
+    (is (not (contains?  ((session/noir-session
+                           #(dissoc % :session))
+                          base-map)
+                         :session)))))
+    
 
 
       
