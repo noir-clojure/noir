@@ -43,7 +43,8 @@
 (defn valid-file?
   "Returns true if a valid file was supplied"
   [m]
-  (and (> (:size m) 0)
+  (and (:size m)
+       (> (:size m) 0)
        (:filename m)))
 
 
