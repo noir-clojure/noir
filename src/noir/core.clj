@@ -212,7 +212,7 @@
   a compojure route using noir's [:method route] syntax, but allows functions
   to be created dynamically:
 
-  (custom-handler* [:post \"/login\"] (fn [params] (println req)))
+  (custom-handler* [:post \"/login\"] (fn [params] (println params)))
 
   These are primarily used to interface with other dynamic handler generating libraries"
   [route func]
