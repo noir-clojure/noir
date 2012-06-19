@@ -7,7 +7,7 @@
                  [compojure "1.0.4"]
                  [bultitude "0.1.5"]
                  [cheshire "4.0.0"]
-                 [ring "1.1.0"]
+                 [ring "1.1.1"]
                  [hiccup "1.0.0"]
                  [clj-stacktrace "0.2.4"]
                  [org.mindrot/jbcrypt "0.3m"]
