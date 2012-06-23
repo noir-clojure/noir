@@ -2,7 +2,8 @@
   "Handler generation functions used by noir.server and other ring handler libraries."
   (:use [compojure.core :only [routes ANY]]
         ring.middleware.reload
-        ring.middleware.flash)
+        ring.middleware.flash
+        ring.middleware.session.memory)
   (:import java.net.URLDecoder)
   (:require [compojure.route :as c-route]
             [hiccup.middleware :as hiccup]
@@ -99,6 +100,11 @@
   [func & args]
   (swap! middleware conj [func args]))
 
+(defn ^:private assoc-if [m k v]
+  (if (not (nil? v))
+    (assoc m k v)
+    m))
+
 (defn wrap-noir-middleware
   "Wrap a base handler in all of noir's middleware"
   [handler opts]
@@ -106,7 +112,9 @@
     (-> handler
         (hiccup/wrap-base-url (options/get :base-url))
         (session/wrap-noir-flash)
-        (session/wrap-noir-session)
+        (session/wrap-noir-session
+         (assoc-if {:store (options/get :session-store (memory-store session/mem))}
+                   :cookie-attrs (options/get :session-cookie-attrs)))
         (cookie/wrap-noir-cookies)
         (validation/wrap-noir-validation)
         (statuses/wrap-status-pages)
