@@ -10,7 +10,7 @@ The best way to get started with noir is by downloading the lein noir plugin for
 
 ```bash
 lein plugin install lein-noir 1.2.1
-lein noir new my-website
+lein new noir my-website
 cd my-website
 lein run
 ```
