@@ -57,7 +57,7 @@
 
 (defn- wrap-route-updating [handler]
   (if (options/dev-mode?)
-    (wrap-reload handler ["src"])
+    (wrap-reload handler {:dirs ["src"]})
     handler))
 
 (defn- wrap-custom-middleware [handler]
