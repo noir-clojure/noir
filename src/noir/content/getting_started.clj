@@ -36,12 +36,12 @@
               [:pre
               [:code
 "(defpage \"/my-page\" []
-  (html
+  (html5
     [:h1 \"This is my first page!\"]))"]]]
              [:div.left
               [:p "Time to get going with our first page. Let's open views/welcome.clj
                   and use (defpage) to add a new page to our site. With that we can go to "
-                  (link-to "http://localhost:8080/my-page" "http://localhost:8080/my-page")
+                  (link-to "/my-page" "/my-page")
                   " and see our handiwork."]]]
 
             [:li
