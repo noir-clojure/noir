@@ -14,10 +14,16 @@ lein noir new my-website
 cd my-website
 lein run
 ```
+###Lein 2
+```bash
+lein new noir myproject
+cd myproject
+lein run
+```
 If you want to include Noir in an already created leiningen project, simply add this to your dependencies:
 
 ```clojure
-[noir "1.2.2"]
+[noir "1.3.0-beta10"]
 ```
 
 ## Docs
