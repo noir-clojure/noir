@@ -6,14 +6,25 @@ Learn more at [Web Noir](http://www.webnoir.org) and see [Pinot](https://github.
 
 ## Usage
 
-The best way to get started with noir is by downloading the lein noir plugin for [leiningen](https://github.com/technomancy/leiningen):
+The best way to get started with noir is with the [leiningen](https://github.com/technomancy/leiningen) noir plugin.
+
+For Leiningen 1 run:
 
 ```bash
 lein plugin install lein-noir 1.2.1
 lein noir new my-website
+```
+For Leiningen 2 run instead (you may also [specify the lein-noir version to use in profiles.clj](https://github.com/technomancy/leiningen/wiki/Upgrading)):
+```bash
+lein new noir my-website
+```
+
+Then continue:
+```bash
 cd my-website
 lein run
 ```
+
 If you want to include Noir in an already created leiningen project, simply add this to your dependencies:
 
 ```clojure
