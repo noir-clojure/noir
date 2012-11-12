@@ -15,7 +15,8 @@
             [noir.statuses :as statuses]
             [noir.options :as options]
             [noir.session :as session]
-            [noir.validation :as validation]))
+            [noir.validation :as validation]
+            [clojure.string :as string]))
 
 (defonce middleware (atom []))
 (defonce wrappers (atom []))
@@ -65,6 +66,16 @@
           handler
           (seq @middleware)))
 
+(defn- wrap-base-url-routing [handler]
+  (fn [req]
+    (let [path-info (or (:path-info req)
+                        (if-let [base-url (options/get :base-url)]
+                          (string/replace-first (:uri req) base-url "")
+                          (:uri req)))]
+      (handler (assoc req :path-info path-info)))))
+                          
+  
+
 ;;***************************************************
 ;; Route packing
 ;;***************************************************
@@ -111,6 +122,7 @@
   (binding [options/*options* (options/compile-options opts)]
     (-> handler
         (hiccup/wrap-base-url (options/get :base-url))
+        (wrap-base-url-routing)
         (session/wrap-noir-flash)
         (session/wrap-noir-session
          (assoc-if {:store (options/get :session-store (memory-store session/mem))}

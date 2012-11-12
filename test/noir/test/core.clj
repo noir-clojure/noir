@@ -227,6 +227,12 @@
         (has-status 200)
         (has-body "<a href=\"/woohoo/hey\">link</a>"))))
 
+(deftest base-url-routing
+  (binding [options/*options* {:base-url "/woohoo"}]
+    (-> (send-request "/woohoo/base-url")
+        (has-status 200)
+        (has-body "<a href=\"/woohoo/hey\">link</a>"))))
+
 (deftest jsonp
   (-> (resp/jsonp "jsonp245" {:pinot "noir"})
       (has-content-type "application/json; charset=utf-8")
