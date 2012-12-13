@@ -1,5 +1,9 @@
 # Noir
 
+We recommend you use [Compojure](https://github.com/weavejester/compojure) and
+[lib-noir](https://github.com/noir-clojure/lib-noir) instead. This project isn't
+really maintained anymore. For more info, see http://blog.raynes.me/blog/2012/12/13/moving-away-from-noir/
+
 A framework for writing clojure websites. Noir is currently being used in production at https://www.readyforzero.com
 
 Learn more at [Web Noir](http://www.webnoir.org) and see [Pinot](https://github.com/ibdknox/pinot) for its ClojureScript counterpart.
